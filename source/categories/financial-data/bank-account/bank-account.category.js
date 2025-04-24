@@ -11,7 +11,7 @@ import {
 import {Text} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
-import {Root,NativeBaseProvider} from 'native-base';
+import {NativeBaseProvider} from 'native-base';
 import {useSelector} from 'react-redux';
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component';
@@ -128,7 +128,8 @@ class BankAccounts extends Component {
       if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            // access_token: this.props.userData.userData.access_token,
+          //  access_token: this.props.userData.userData.access_token,
+          access_token: this.userinfo?.access_token
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
@@ -161,7 +162,8 @@ class BankAccounts extends Component {
     await viewRecords(
       'BankAccounts',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo?.access_token
     )
       .then((response) => {
         console.log('View res: ', JSON.stringify(response));
@@ -265,7 +267,7 @@ class BankAccounts extends Component {
   getBusinessEntity = async () => {
     const {userData} = this.props;
     if (userData !== null) {
-      await lookupType(userData.userData.access_token, 'RefBusinessEntity')
+      await lookupType(this.userInfo?.access_tokenn, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
           this.setState({refArray: response});
@@ -321,7 +323,7 @@ class BankAccounts extends Component {
             })
           }
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          editable={false}
           name="Account Type"
         />
       </View>
@@ -1001,7 +1003,7 @@ class BankAccounts extends Component {
       FinancialInstitution: issuingBankId,
       Comment: notes,
     });
-    await createOrUpdateRecord('BankAccounts', recid, data, access_token)
+    await createOrUpdateRecord('BankAccounts', recid, data,this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -1021,7 +1023,8 @@ class BankAccounts extends Component {
     await deleteRecords(
       'BankAccounts',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo?.access_token
     )
       .then((response) => navigation.goBack())
       .catch((error) => {
@@ -1043,7 +1046,8 @@ class BankAccounts extends Component {
     await archiveRecords(
       'BankAccounts',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo?.access_token,
       data,
     )
       .then((response) => {
@@ -1143,6 +1147,7 @@ class BankAccounts extends Component {
   );
 
   onSave = () => {
+    console.log("save clicked")
     this.submit();
   };
 

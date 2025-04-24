@@ -166,7 +166,7 @@ export const uploadFile = async (access_token, data, name) => {
 
 export const resetPasswordStepOne = async (data) => {
   console.log(data, 'email');
-  return axios(`${BASE_URL}/actions/resetPassword/startReset`, {
+  return axios(`${BASE_URL}/actions/accountprofile/sendDataEncryptionKey`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',

@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, Text} from 'react-native';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import {TouchableRipple} from 'react-native-paper';
 
 import styles from './modal-picker.style';
@@ -35,7 +35,7 @@ const ModalPicker = ({label, onPress, color, editable, name}) => (
           {label}
         </Text>
         <Icon
-          name="arrow-down"
+          name="keyboard-arrow-down"
           size={12}
           color={!editable ? 'rgb(33, 47, 60)' : 'rgba(33, 47, 60, 0.5)'}
           style={styles.icon}

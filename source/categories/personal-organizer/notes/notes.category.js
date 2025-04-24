@@ -11,7 +11,7 @@ import {
 import {Text, TextInput} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
-import {Root} from 'native-base';
+import {NativeBaseProvider} from 'native-base';
 
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component.js';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component.js';
@@ -286,7 +286,7 @@ class Notes extends Component {
     const {route, navigation} = this.props;
     const {title, type, background, theme, mode, recid} = route.params;
     return (
-      <Root>
+      <NativeBaseProvider>
         <SafeAreaView style={styles.outerView}>
           <ImageBackground
             source={this.background()}
@@ -318,7 +318,7 @@ class Notes extends Component {
             </ScrollView>
           </ImageBackground>
         </SafeAreaView>
-      </Root>
+      </NativeBaseProvider>
     );
   }
 }

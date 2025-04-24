@@ -3,12 +3,12 @@ import {thunk} from 'redux-thunk'
 import { persistStore, persistReducer } from "redux-persist";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import reducers from './index'; //Import the root reducer
+import reducers from './index'; //Import the NativeBaseProvider reducer
 
 // const enhancer = compose(applyMiddleware(thunk));
 
 const persistConfig = {
-  key: "Btyb",
+  key: "securesack",
   storage: AsyncStorage,
 };
 

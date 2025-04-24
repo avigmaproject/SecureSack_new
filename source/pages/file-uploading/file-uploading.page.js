@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {View} from 'react-native';
 import {Provider} from 'react-native-paper';
 import {connect} from 'react-redux';
-import { Root,NativeBaseProvider } from "native-base";
+import { NativeBaseProvider } from "native-base";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HeaderButton from '../../components/header-button/header-button.component';
 import File from '../../components/file/file.component';

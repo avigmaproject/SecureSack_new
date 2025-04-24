@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import {Title, Caption, TouchableRipple} from 'react-native-paper';
 import axios from 'axios';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {insuranceDataTypeList, getDataAsType} from './insurance-data-type.list';
 import {BASE_URL} from '../../configuration/api/api.types';
 
@@ -28,15 +28,27 @@ class InsuranceDataType extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation} = this.props;
     navigation.addListener('focus', () => {
       this.getType();
       this.setState(this.initialState);
+      this.getUserInfo();
     });
   }
-
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   getType = () => {
     getDataAsType.map((type) => this.getData(type));
   };
@@ -149,7 +161,8 @@ class InsuranceDataType extends Component {
 
   navigation = (type, title, recid, mode) => {
     const {navigation, userData} = this.props;
-    if (userData.userData.showUpgrade && mode === 'Add') {
+    // if (userData.userData.showUpgrade && mode === 'Add') {
+      if ( this.userInfo?.showPaymentRequired && mode === 'Add') {
       Alert.alert(
         //title
         'Important',

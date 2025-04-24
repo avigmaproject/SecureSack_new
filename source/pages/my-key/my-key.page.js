@@ -76,17 +76,32 @@ class MyKey extends Component {
 
   editArray = () => {
     const {edit} = this.state;
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (edit.length !== 0) {
+      if (isValidEmail(edit)) {
       this.state.editors.push(edit);
       this.setState({edit: ''});
     }
+  
+  else {
+    alert("Please enter a valid email address");
+  }
+}
   };
+  
 
   viewerArray = () => {
     const {view} = this.state;
+    const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  
     if (view.length !== 0) {
+      if (isValidEmail(view)) {
       this.state.viewers.push(view);
       this.setState({view: ''});
+      }
+      else {
+        alert("Please enter a valid email address");
+      }
     }
   };
 
@@ -124,6 +139,8 @@ class MyKey extends Component {
         'access_token: ',
      
         this.userInfo?.access_token,
+        data.id,
+        apidata,
      
       );
       await updateKey(
@@ -135,7 +152,7 @@ class MyKey extends Component {
           console.log('Update response: ', response);
           navigation.goBack();
         })
-        .catch((error) => alert("Please enter valid email."));
+        .catch((error) => alert(error));
     }
   };
 
@@ -144,6 +161,7 @@ class MyKey extends Component {
   };
 
   getReplaceKey = (key) => {
+
     this.confirmationModal(key);
   };
 
@@ -245,6 +263,9 @@ class MyKey extends Component {
     const {modal} = this.state;
     const {data, keyList} = route.params;
     console.log('Data: ', JSON.stringify(keyList));
+    const filteredList = keyList.filter(item => item.code !== data.code);
+    console.log("console.log(filteredList);",filteredList);
+console.log(filteredList);
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView keyboardShouldPersistTaps="handled">
@@ -263,7 +284,7 @@ class MyKey extends Component {
             </View>
             <DeleteKeyModal
               isModalVisible={modal}
-              list={keyList}
+              list={filteredList}
               changeModalVisibility={this.changeModalVisibility}
               getReplaceKey={this.getReplaceKey}
             />

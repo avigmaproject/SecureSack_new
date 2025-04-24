@@ -6,7 +6,7 @@ import { NativeBaseProvider, extendTheme } from 'native-base';
 import 'react-native-gesture-handler';
 import 'react-native-reanimated'; // ✅ MUST be first
 
-import store from './source/redux/root-reducer/root.reducer';
+import store from './source/redux/NativeBaseProvider-reducer/NativeBaseProvider.reducer';
 import MainStackNavigator from './source/navigation/main-stack-navigator/main-stack-navigator.navigation.js';
 
 // Create a theme (you can leave it empty to use defaults)

@@ -484,7 +484,7 @@ PODS:
     - React-cxxreact
     - React-debug
     - React-Fabric/components/legacyviewmanagerinterop (= 0.75.1)
-    - React-Fabric/components/root (= 0.75.1)
+    - React-Fabric/components/NativeBaseProvider (= 0.75.1)
     - React-Fabric/components/view (= 0.75.1)
     - React-featureflags
     - React-graphics
@@ -515,7 +515,7 @@ PODS:
     - React-runtimescheduler
     - React-utils
     - ReactCommon/turbomodule/core
-  - React-Fabric/components/root (0.75.1):
+  - React-Fabric/components/NativeBaseProvider (0.75.1):
     - DoubleConversion
     - fmt (= 9.1.0)
     - glog

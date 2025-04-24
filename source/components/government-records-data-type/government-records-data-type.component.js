@@ -24,15 +24,27 @@ class GovernmentRecordsData extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation} = this.props;
     navigation.addListener('focus', () => {
       this.getType();
       this.setState(this.initialState);
+      this.getUserInfo()
     });
   }
-
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   componentDidUpdate(prevProps) {
     if (prevProps.archive !== this.props.archive) {
       this.getType();
@@ -45,7 +57,8 @@ class GovernmentRecordsData extends Component {
 
   getData = async (type) => {
     const {userData, archive, navigation} = this.props;
-    if (userData !== null) {
+    // if (userData !== null) {
+    if(this.userInfo!=null){
       let config = {
         method: 'GET',
         url: `${BASE_URL}/data/${type}`,
@@ -55,7 +68,8 @@ class GovernmentRecordsData extends Component {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + userData.userData.access_token,
+          // Authorization: 'Bearer ' + userData.userData.access_token,
+          Authorization: 'Bearer ' + this.userInfo?.access_token,
         },
       };
       await axios(config)
@@ -140,7 +154,8 @@ class GovernmentRecordsData extends Component {
 
   navigation = (type, title, recid, mode) => {
     const {navigation, userData} = this.props;
-    if (userData.userData.showUpgrade && mode === "Add") {
+    // if (userData.userData.showUpgrade && mode === "Add") {
+      if (this.userInfo?.showPaymentRequired && mode === "Add") {
       Alert.alert(
       //title
       'Important',

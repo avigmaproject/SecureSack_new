@@ -11,7 +11,7 @@ import {
 import {Text} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
-import {Root,NativeBaseProvider} from 'native-base';
+import {NativeBaseProvider} from 'native-base';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component.js';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component.js';
@@ -90,8 +90,10 @@ class ServiceAccount extends Component {
   };
   constructor(props) {
     super(props);
+    this.handleBackPress = this.handleBackPress.bind(this);
     this.state = {
       ...this.initialState,
+     
     };
   }
   userInfo = null;
@@ -126,7 +128,7 @@ class ServiceAccount extends Component {
     }
   };
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', handler);
+    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
 
   viewRecord = async () => {

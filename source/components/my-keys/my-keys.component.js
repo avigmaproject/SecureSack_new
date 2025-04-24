@@ -33,7 +33,7 @@ const myKeyList = (item, navigation, keyList) => {
       <View>
         <View style={styles.titleSubTitle}>
           <Title style={styles.catTitle}>{item.name}</Title>
-          <Caption>{item.code}</Caption>
+          {/* <Caption>{item.code}</Caption> */}
           <View style={styles.arrowView}>
             <SimpleLineIcons
               name="right"

@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'PublicSans-Regular',
     fontSize: 18,
+    color:"rgb(33, 47, 60)"
   },
   buttonContainer: {
     paddingTop: 20,
@@ -22,7 +23,8 @@ const styles = StyleSheet.create({
   note: {
     fontFamily: 'PublicSans-Regular',
     fontSize: 15,
-    marginTop: 10
+    marginTop: 10,
+    color:"rgb(33, 47, 60)"
   }
 });
 

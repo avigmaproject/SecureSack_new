@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import FormData from 'form-data';
-import {Toast, Root} from 'native-base';
+import {Toast, NativeBaseProvider} from 'native-base';
 // import DocumentPicker from 'react-native-document-picker';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';

@@ -46,7 +46,7 @@
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = SecureSackMobileApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-SecureSackMobileApp-SecureSackMobileAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SecureSackMobileApp-SecureSackMobileAppTests.release.xcconfig"; path = "Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests.release.xcconfig"; sourceTree = "<group>"; };
 		9FAAE0969DD8881BAE7CF430 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = SecureSackMobileApp/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKNativeBaseProvider; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,7 +226,7 @@
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
-			projectRoot = "";
+			projectNativeBaseProvider = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* SecureSackMobileApp */,
 				00E356ED1AD99517003FC87E /* SecureSackMobileAppTests */,
@@ -261,8 +261,8 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/.xcode.env.local",
-				"$(SRCROOT)/.xcode.env",
+				"$(SRCNativeBaseProvider)/.xcode.env.local",
+				"$(SRCNativeBaseProvider)/.xcode.env",
 			);
 			name = "Bundle React Native code and images";
 			outputPaths = (
@@ -277,15 +277,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-frameworks.sh\"\n";
+			shellScript = "\"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
@@ -297,7 +297,7 @@
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"${PODS_NativeBaseProvider}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
@@ -307,7 +307,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_NativeBaseProvider}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
@@ -319,7 +319,7 @@
 			);
 			inputPaths = (
 				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
+				"${PODS_NativeBaseProvider}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
@@ -329,7 +329,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_NativeBaseProvider}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */ = {
@@ -338,15 +338,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
@@ -355,15 +355,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-resources.sh\"\n";
+			shellScript = "\"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp/Pods-SecureSackMobileApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
@@ -372,15 +372,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-resources.sh\"\n";
+			shellScript = "\"${PODS_NativeBaseProvider}/Target Support Files/Pods-SecureSackMobileApp-SecureSackMobileAppTests/Pods-SecureSackMobileApp-SecureSackMobileAppTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -540,7 +540,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_OBJC_NativeBaseProvider_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -576,7 +576,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"\"$(SDKROOT)/usr/lib/swift\"",
+					"\"$(SDKNativeBaseProvider)/usr/lib/swift\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
@@ -594,8 +594,8 @@
 					"$(inherited)",
 					" ",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
-				SDKROOT = iphoneos;
+				REACT_NATIVE_PATH = "${PODS_NativeBaseProvider}/../../node_modules/react-native";
+				SDKNativeBaseProvider = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				USE_HERMES = true;
 			};
@@ -624,7 +624,7 @@
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_OBJC_NativeBaseProvider_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -653,7 +653,7 @@
 					"$(inherited)",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"\"$(SDKROOT)/usr/lib/swift\"",
+					"\"$(SDKNativeBaseProvider)/usr/lib/swift\"",
 					"\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\"",
 					"\"$(inherited)\"",
 				);
@@ -670,8 +670,8 @@
 					"$(inherited)",
 					" ",
 				);
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
-				SDKROOT = iphoneos;
+				REACT_NATIVE_PATH = "${PODS_NativeBaseProvider}/../../node_modules/react-native";
+				SDKNativeBaseProvider = iphoneos;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -709,5 +709,5 @@
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
+	NativeBaseProviderObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }

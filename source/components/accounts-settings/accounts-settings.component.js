@@ -5,10 +5,11 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  Keyboard,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {Toast, Root,NativeBaseProvider} from 'native-base';
+import {Toast, NativeBaseProvider} from 'native-base';
 import qs from 'qs';
 import {connect} from 'react-redux';
 
@@ -39,11 +40,26 @@ class AccountSettings extends Component {
     }; 
   }
 
+  userInfo = null;
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   changePass = async () => {
+    this.getUserInfo()
+Keyboard.dismiss()
     this.setState({isLoader: true});
     const {oldPass, newPass, conPass} = this.state;
 
-    const access_token = this.props.userData.userData.access_token;
+    const access_token = this.userInfo?.access_token;
     console.log("chngepass",access_token)
     const {navigation} = this.props
     if (this.validation(oldPass, newPass, conPass)){
@@ -54,19 +70,27 @@ class AccountSettings extends Component {
       password: newPass,
       password2: conPass,
     });
+    console.log("  await changePassword(access_token, data)",  await changePassword(access_token, data))
     await changePassword(access_token, data)
       .then((response) => {
         console.log('Ref Password: ', response);
-        this.showToast('Password reset successfully', 'success');
+        alert(response.message)
+        if(response.status==="Success"){
+          this.showToast('Password reset successfully', 'success');
+          navigation.goBack()
+        }
+        // this.showToast('Password reset successfully', 'success');
+      
         this.setState({isLoader: false});
+      
       })
       .catch((error) => {
         console.log('Error: ', error);
-        this.setState({isLoader: false});
-        navigation.reset({
-            index: 0,
-            routes: [{name: 'Login'}],
-          }),
+         this.setState({isLoader: false});
+        // navigation.reset({
+        //     index: 0,
+        //     routes: [{name: 'Login'}],
+        //   }),
         alert(error);
       });
         }
@@ -139,10 +163,10 @@ class AccountSettings extends Component {
       .catch((error) => {
         console.log('Error: ', error.message);
         this.setState({isLoader: false});
-        navigation.reset({
-            index: 0,
-            routes: [{name: 'Login'}],
-          })
+        // navigation.reset({
+        //     index: 0,
+        //     routes: [{name: 'Login'}],
+        //   })
       });
   };
 

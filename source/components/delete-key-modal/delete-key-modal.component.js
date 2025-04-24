@@ -13,6 +13,8 @@ class DeleteKeyModal extends Component {
   }
 
   displayLabel = (item) => (
+    // console.log("itemkey===>",item)
+
     <TouchableRipple
       rippleColor="rgba(0, 0, 0, .32)"
       onPress={() => this.addValue(item)}>

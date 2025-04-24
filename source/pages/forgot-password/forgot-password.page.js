@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, SafeAreaView, ImageBackground} from 'react-native';
-import {Root, Toast} from 'native-base';
+import {NativeBaseProvider, Toast} from 'native-base';
 import qs from 'qs';
 import axios from 'axios';
 
@@ -398,7 +398,7 @@ class ForgotPassword extends Component {
   render() {
     const {isEmailComponent} = this.state;
     return (
-      <Root>
+      <NativeBaseProvider>
         <View style={styles.background}>
           <ImageBackground
             source={require('../../assets/png-images/semi-cricle.png')}
@@ -417,7 +417,7 @@ class ForgotPassword extends Component {
             <View/>
           )}
         </SafeAreaView>
-      </Root>
+      </NativeBaseProvider>
     );
   }
 }

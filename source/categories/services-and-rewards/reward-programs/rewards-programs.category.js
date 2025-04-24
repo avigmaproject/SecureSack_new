@@ -11,7 +11,7 @@ import {
 import {Text} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
-import {Root,NativeBaseProvider} from 'native-base';
+import {NativeBaseProvider} from 'native-base';
 
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component.js';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component.js';
