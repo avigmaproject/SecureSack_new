@@ -176,6 +176,12 @@ class ConsumerLoan extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     this.setState({isLoader: true});
     const {
       name,
@@ -220,7 +226,7 @@ class ConsumerLoan extends Component {
       Refinanced: refiance === 'Yes' ? true : false,
       Note: notes,
     });
-    await createOrUpdateRecord('ConsumerLoan', recid, data, access_token)
+    await createOrUpdateRecord('ConsumerLoan', recid, data,  this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -505,7 +511,8 @@ class ConsumerLoan extends Component {
               () => this.changesMade(),
             )
           }
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Refiance"
         />
       </View>

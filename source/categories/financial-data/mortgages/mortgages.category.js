@@ -213,6 +213,11 @@ class Mortgage extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+    }
     this.setState({isLoader: true});
     const {
       name,
@@ -276,7 +281,7 @@ class Mortgage extends Component {
       Comment: notes,
     });
 
-    await createOrUpdateRecord('Mortgage', recid, data, access_token)
+    await createOrUpdateRecord('Mortgage', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -396,7 +401,8 @@ class Mortgage extends Component {
               () => this.changesMade(),
             )
           }
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Term"
         />
       </View>
@@ -706,7 +712,8 @@ class Mortgage extends Component {
                 () => this.changesMade(),
               )
             }
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
             name="Refianced"
           />
         </View>
@@ -727,7 +734,8 @@ class Mortgage extends Component {
                 () => this.changesMade(),
               )
             }
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
             name="Prepayment Penalty"
           />
         </View>

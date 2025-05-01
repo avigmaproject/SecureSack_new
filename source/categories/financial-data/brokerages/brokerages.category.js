@@ -187,6 +187,12 @@ class BrokerageAccount extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+    
+    }
     this.setState({isLoader: true});
     const {
       access_token,
@@ -234,7 +240,7 @@ class BrokerageAccount extends Component {
       AccountClosingDate: closedOn,
       Notes: notes,
     });
-    await createOrUpdateRecord('BrokerageAccount', recid, data, access_token)
+    await createOrUpdateRecord('BrokerageAccount', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();

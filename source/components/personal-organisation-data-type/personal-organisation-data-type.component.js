@@ -4,8 +4,8 @@ import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Title, Caption, TouchableRipple} from 'react-native-paper';
 import axios from 'axios';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-
+import SimpleLineIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   personalOrganisationDataTypeList,
   getDataAsType,
@@ -31,9 +31,22 @@ class PersonalOrganisationData extends Component {
     navigation.addListener('focus', () => {
       this.getType();
       this.setState(this.initialState)
+      this.getUserInfo()
     });
   }
-
+  userInfo = null;
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   getType = () => {
     getDataAsType.map((type) => this.getData(type));
     console.log('getDataAsType', getDataAsType);
@@ -144,7 +157,7 @@ class PersonalOrganisationData extends Component {
 
   navigation = (type, title, recid, mode) => {
     const {navigation, userData} = this.props;
-    if (userData.userData.showUpgrade && mode === "Add") {
+    if ( this.userInfo?.showPaymentRequired && mode === "Add") {
       Alert.alert(
       //title
       'Important',
@@ -177,7 +190,7 @@ class PersonalOrganisationData extends Component {
             <Caption>{this.getSubTitle(type, item)}</Caption>
             <View style={styles.arrowView}>
               <SimpleLineIcons
-                name="arrow-right"
+                name="keyboard-arrow-right"
                 color="rgb(33, 47, 60)"
                 size={15}
               />

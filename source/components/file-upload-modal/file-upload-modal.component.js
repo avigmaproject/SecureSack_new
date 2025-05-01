@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import FormData from 'form-data';
 import {Toast, NativeBaseProvider} from 'native-base';
-// import DocumentPicker from 'react-native-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 import Icons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import {Chip} from 'react-native-paper';
 import qs from 'qs';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   addTag,
   uploadFile,
@@ -47,38 +47,67 @@ class FileUploadModal extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {data, navigation} = this.props;
     this.setState(this.initialState);
+    this.getUserInfo()
   }
- 
-  // uploadFile = async () => {
-  //   try {
-  //     const results = await DocumentPicker.pick({
-  //       type: [DocumentPicker.types.allFiles],
-  //     });
-  //     // const data = results[0].name;
-  //     console.log('SSSS+++++,  ', results);
-  //     this.setState({
-  //       fileList: results.name,
-  //       countList: this.state.countList + 1,
-  //     });
-  //     var filedata = {
-  //       doc: results.name,
-  //       id: this.state.countList,
-  //     };
-  //     let data = new FormData();
-  //     data.append('', results.uri);
-  //     this.state.fileListData.push(filedata);
-  //     this.uploadFileApi(data, results.name);
-  //   } catch (err) {
-  //     if (DocumentPicker.isCancel(err)) {
-  //     } else {
-  //       throw err;
-  //     }
-  //   }
-  // };
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
+  uploadFile = async () => {
+    try {
+      const results = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+  
+      const file = results[0]; // Get the selected file
+  
+      console.log('SSSS+++++,  ', results);
+  
+      this.setState(prevState => ({
+        fileList: file.name,
+        countList: prevState.countList + 1,
+      }));
+  
+      const filedata = {
+        doc: file.name,
+        id: this.state.countList,
+      };
+  
+      const formData = new FormData();
+      formData.append('file', {
+        uri: file.uri,
+        type: file.type,
+        name: file.name,
+      });
+  
+      this.state.fileListData.push(filedata);
+  
+      console.log(formData, "data===>");
+      console.log(file.name, "results.name===>");
+  
+      this.uploadFileApi(formData, file.name);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        console.log('User cancelled document picker');
+      } else {
+        console.error(err);
+        throw err;
+      }
+    }
+  };
+  
 
   showToast = (message) => {
     ToastAndroid.showWithGravity(
@@ -89,11 +118,17 @@ class FileUploadModal extends Component {
   };
 
   uploadFileApi = async (data, name) => {
-    this.setState({isLoader: true});
-    const {access_token} = this.props;
-    console.log('Responseing: ', access_token);
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
+    // this.setState({isLoader: true});
+    // const {access_token} = this.props;
+     console.log('Responseing: ', this.userInfo?.access_token, data, name);
     try {
-      await uploadFile(access_token, data, name)
+      await uploadFile(this.userInfo?.access_token, data, name)
         .then((response) => {
           console.log('Response: ', response);
           if (response.success) {
@@ -121,7 +156,13 @@ class FileUploadModal extends Component {
 
   updateTags = async (item) => {
     this.setState({isLoader: true});
-    const {access_token} = this.props;
+    // const {access_token} =this.userInfo;
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const fileid = this.state.fileid;
     let updateTagsList = [];
     updateTagsList.push(item.item);
@@ -132,15 +173,21 @@ class FileUploadModal extends Component {
   };
 
   addTags = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
-    const {access_token, edit, data} = this.props;
-    console.log('ID: ', access_token);
+    const { edit, data} = this.props;
+    // console.log('ID: ', access_token);
     if (this.state.tagCat.length > 0) {
       if (edit) {
         console.log('Check true');
         try {
           const tags = qs.stringify({tags: this.state.tagCat});
-          await updateFileParams(access_token, tags, data.item.id).then(
+          await updateFileParams(this.userInfo?.access_token, tags, data.item.id).then(
             (response) => {
               if (response.status === 'Success') {
                 this.showToast('Tag added  successfully');
@@ -162,7 +209,7 @@ class FileUploadModal extends Component {
         console.log('Check false');
         try {
           const tags = qs.stringify({tag: this.state.tagCat});
-          await addTag(access_token, tags)
+          await addTag(this.userInfo?.access_token, tags)
             .then((response) => {
               console.log('Res: ', response);
               if (response.status === 'Success') {
@@ -250,7 +297,7 @@ class FileUploadModal extends Component {
   render() {
     const {show} = this.props;
     const {fileListData} = this.state;
-    console.log('Edit: ', this.props);
+    // console.log('Edit: ', this.props);
     return (
       <Modal transparent={false} animationType={'fade'} visible={show}>
         <SafeAreaView>

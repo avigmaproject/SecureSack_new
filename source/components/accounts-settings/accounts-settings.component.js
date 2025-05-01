@@ -150,13 +150,20 @@ Keyboard.dismiss()
     }
 
   dataEncryption = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     const email = await AsyncStorage.getItem('email');
     const {navigation} = this.props
-    console.log(email, 'async');
+    console.log(this.userInfo?.access_token, 'async');
     var data = qs.stringify({email: email});
-    await resetPasswordStepOne(data)
+    await resetPasswordStepOne(email,this.userInfo?.access_token)
       .then((response) => {
         console.log('Ref Business: ', response);
+        alert('Data encryption key sent successfully')
         this.showToast('Data encryption key sent', 'success');
         this.setState({isLoader: false});
       })

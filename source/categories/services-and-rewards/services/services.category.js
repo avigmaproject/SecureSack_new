@@ -90,11 +90,12 @@ class ServiceAccount extends Component {
   };
   constructor(props) {
     super(props);
-    this.handleBackPress = this.handleBackPress.bind(this);
+
     this.state = {
       ...this.initialState,
      
     };
+    // this.handleBackPress = this.handleBackPress.bind(this);
   }
   userInfo = null;
   componentDidMount() {
@@ -103,10 +104,12 @@ class ServiceAccount extends Component {
 
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
+      if(this.userInfo)
         this.setState(
           {
             // access_token: this.props.userData.userData.access_token,
+            access_token:this.userInfo?.access_token
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
@@ -248,6 +251,11 @@ class ServiceAccount extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+    }
     this.setState({isLoader: true});
     const {
       name,
@@ -315,17 +323,18 @@ class ServiceAccount extends Component {
       CreditCardProvided: this.getSelectedCreditId(creditCardProvided),
     });
 
-    await createOrUpdateRecord('ServiceAccount', recid, data, access_token)
+    await createOrUpdateRecord('ServiceAccount', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
       })
       .catch((error) => {
         this.setState({isLoader: false});
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
+        console.log("eroor",error)
       });
   };
 
@@ -346,7 +355,8 @@ class ServiceAccount extends Component {
     await deleteRecords(
       'ServiceAccount',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo?.access_token
     )
       .then((response) => navigation.goBack())
       .catch((error) => {
@@ -472,7 +482,8 @@ class ServiceAccount extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Type"
         />
       </View>
@@ -543,7 +554,8 @@ class ServiceAccount extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Due"
         />
       </View>
@@ -814,7 +826,8 @@ class ServiceAccount extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
             name="Is Credit Card Provided?"
           />
         </View>
@@ -827,7 +840,8 @@ class ServiceAccount extends Component {
             }
             onPress={() => this.filterCardArray()}
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
             name="Credit Card On Record"
           />
         </View>

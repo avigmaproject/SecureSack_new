@@ -657,7 +657,8 @@ class BankAccounts extends Component {
               )
             }
             color={Color.lightishBlue}
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
             name="Size"
           />
         </View>
@@ -687,7 +688,8 @@ class BankAccounts extends Component {
             icon="dollar-sign"
             keyboardType="number-pad"
             color={Color.lightishBlue}
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
           />
         </View>
       </View>
@@ -709,7 +711,8 @@ class BankAccounts extends Component {
             )
           }
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Payment Due Type"
         />
       </View>
@@ -735,7 +738,8 @@ class BankAccounts extends Component {
               )
             }
             color={Color.lightishBlue}
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
             name="Size"
           />
         </View>
@@ -765,7 +769,8 @@ class BankAccounts extends Component {
             icon="dollar-sign"
             keyboardType="number-pad"
             color={Color.lightishBlue}
-            editable={this.state.editable}
+            // editable={this.state.editable}
+            editable={false}
           />
         </View>
       </View>
@@ -787,7 +792,8 @@ class BankAccounts extends Component {
             )
           }
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Payment Due Type"
         />
       </View>
@@ -901,6 +907,12 @@ class BankAccounts extends Component {
   );
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {
       access_token,

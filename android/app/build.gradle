@@ -74,15 +74,15 @@ def enableProguardInReleaseBuilds = false
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
-    ndkVersion NativeBaseProviderProject.ext.ndkVersion
-    buildToolsVersion NativeBaseProviderProject.ext.buildToolsVersion
-    compileSdk NativeBaseProviderProject.ext.compileSdkVersion
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.securesackmobileapp"
     defaultConfig {
         applicationId "com.securesackmobileapp"
-        minSdkVersion NativeBaseProviderProject.ext.minSdkVersion
-        targetSdkVersion NativeBaseProviderProject.ext.targetSdkVersion
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }

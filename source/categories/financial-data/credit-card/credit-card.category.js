@@ -215,6 +215,12 @@ class CreditCard extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {
       name,
@@ -278,7 +284,7 @@ class CreditCard extends Component {
       Comment: notes,
     });
     console.log('Check data: ', data);
-    await createOrUpdateRecord('CreditCard', recid, data, access_token)
+    await createOrUpdateRecord('CreditCard', recid, data,  this.userInfo?.access_token,)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -381,7 +387,8 @@ class CreditCard extends Component {
               () => this.changesMade(),
             )
           }
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Type"
         />
       </View>

@@ -19,4 +19,4 @@ buildscript {
     }
 }
 
-apply plugin: "com.facebook.react.NativeBaseProviderproject"
+apply plugin: "com.facebook.react.rootproject"

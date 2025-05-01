@@ -12,7 +12,7 @@ import {Text} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
 import {NativeBaseProvider} from 'native-base';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component.js';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component.js';
 import ModalPicker from '../../../components/modal-picker/modal-picker.component.js';
@@ -87,7 +87,7 @@ class RewardProgram extends Component {
       if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            // access_token: this.props.userData.userData.access_token,
+           access_token:this.userInfo?.access_token,
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
@@ -203,6 +203,13 @@ class RewardProgram extends Component {
   };
 
   submit = async () => {
+    console.log("submit=>")
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     this.setState({isLoader: true});
     const {
       access_token,
@@ -243,7 +250,7 @@ class RewardProgram extends Component {
       Notes: notes,
     });
 
-    await createOrUpdateRecord('RewardProgram', recid, data, access_token)
+    await createOrUpdateRecord('RewardProgram', recid, data,this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -382,7 +389,8 @@ class RewardProgram extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          // editable={this.state.editable}
+          editable={false}
           name="Type"
         />
       </View>

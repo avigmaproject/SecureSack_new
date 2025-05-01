@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Title, Caption, TouchableRipple} from 'react-native-paper';
 import axios from 'axios';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import SimpleLineIcons from 'react-native-vector-icons/MaterialIcons';
 
 import {serviceDataTypeList, getDataAsType} from './service-data-type.list';
 import {BASE_URL} from '../../configuration/api/api.types';
@@ -177,7 +177,7 @@ class ServiceDataType extends Component {
             <Title style={styles.catTitle}>{this.getTitle(type, item)}</Title>
             <Caption>{this.getSubTitle(type, item)}</Caption>
             <View style={styles.arrowView}>
-              <SimpleLineIcons name="arrow-right" color="rgb(33, 47, 60)" size={15} />
+              <SimpleLineIcons name="keyboard-arrow-right" color="rgb(33, 47, 60)" size={15} />
             </View>
           </View>
         </View>

@@ -50,9 +50,15 @@ class FileUploading extends Component {
     }
   };
   getFileList = async ()  => {
-  const {access_token} = this.props.userData.userData;
-  this.setState({ isLoader: true, access_token: access_token })
-  await getAllFiles(access_token)
+  // const {access_token} = this.props.userData.userData;
+  const information = await AsyncStorage.getItem('user_info');
+  if (information) {
+    const parsedInfo = JSON.parse(information);
+    this.userInfo = parsedInfo; // 👈 stored in class variable
+    console.log('User Info stored in variable:', this.userInfo);
+  }
+  this.setState({ isLoader: true, access_token: this.userInfo?.access_token })
+  await getAllFiles( this.userInfo?.access_token )
   .then(response => {
     this.setState({ fileList: response.data.items, isLoader: false })
     this.array = response.data.items
