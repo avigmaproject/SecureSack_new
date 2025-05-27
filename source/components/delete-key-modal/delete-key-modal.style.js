@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 17,
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     textAlign: 'center',
     margin: 5
   },

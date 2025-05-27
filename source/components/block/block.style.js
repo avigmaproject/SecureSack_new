@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
     borderRadius: 19,
   },
   container: {
-    marginVertical: 10,
+    
+    // marginVertical: 10,
     // marginHorizontal: spacing,
   },
 });

@@ -6,7 +6,7 @@ const styles = {
     paddingTop: 30,
   },
   title: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 20,
     color: 'rgb(33, 47, 60)',
   },
@@ -47,7 +47,7 @@ const styles = {
     padding: 15,
   },
   labelText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 12,
   },
   icon: {
@@ -55,7 +55,7 @@ const styles = {
     right: 0,
   },
   recipe: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 16,
     color: 'rgba(33, 47, 60, 0.6)',
   },

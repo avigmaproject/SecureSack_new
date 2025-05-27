@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   modalButtonTitle: {
     color: '#FFFFFF',
     fontSize: 15,
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
   },
   modalBackground: {
     flex: 1,
@@ -73,14 +73,14 @@ const styles = StyleSheet.create({
   },
   grettingText: {
     fontSize: 28,
-    fontFamily: 'PublicSans-ExtraLight',
+    fontFamily: 'Montserrat-ExtraLight',
     color:"black"
   },
   grettingView: {
     marginTop: 18,
   },
   name: {
-    fontFamily: 'PublicSans-Bold',
+    fontFamily: 'Montserrat-Bold',
     color:"black"
   },
 });

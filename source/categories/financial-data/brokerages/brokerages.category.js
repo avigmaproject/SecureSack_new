@@ -80,12 +80,12 @@ class BrokerageAccount extends Component {
     navigation.addListener('focus', () => {
       BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {access_token:  this.userInfo?.access_token},
           () => this.viewRecord(),
           this.getBusinessEntity(),
-          this.userInfo()
+          this.getUserInfo()
         );
     });
   }
@@ -107,6 +107,12 @@ class BrokerageAccount extends Component {
   }
 
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
@@ -130,7 +136,7 @@ class BrokerageAccount extends Component {
           routes: [{name: 'Login'}],
         });
       });
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -255,6 +261,12 @@ class BrokerageAccount extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
@@ -273,6 +285,12 @@ class BrokerageAccount extends Component {
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;

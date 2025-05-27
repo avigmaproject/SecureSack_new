@@ -12,6 +12,8 @@ const MainContent = ({navigation}) => {
         <Block item={item} navigation={navigation} index={index} />
       )}
       numColumns={2}
+      columnWrapperStyle={{justifyContent: 'space-between',marginTop:15 }}
+      contentContainerStyle={{paddingBottom: 20}}
       // style={{flex: 0, flexDirection: 'column'}}
       // contentContainerStyle={{justifyContent: 'space-around'}}
       // columnWrapperStyle={{flexShrink: 1}}

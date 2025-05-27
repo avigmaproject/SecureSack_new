@@ -16,7 +16,7 @@ const styles = {
     paddingTop: 20,
   },
   toastText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
   },
   extras: {
@@ -25,7 +25,7 @@ const styles = {
     marginTop: 10,
   },
   extrasText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
     fontSize: 12,
   },

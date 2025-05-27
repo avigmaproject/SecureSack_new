@@ -100,7 +100,7 @@ class FileUploading extends Component {
           <Provider> 
             <NativeBaseProvider>
               <View style={styles.container}>
-                <HeaderButton icon="add" title="Upload File" navigation={navigation} iconPress={() => this.setState({ show: true })}/>
+                <HeaderButton icon="add" title="Files" navigation={navigation} iconPress={() => this.setState({ show: true })}/>
                 <View style={styles.searchView}>
                   <InputTextSearch 
                     placeholder="Search"

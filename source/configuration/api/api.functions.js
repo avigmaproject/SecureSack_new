@@ -38,6 +38,7 @@ export const lookupType = async (access_token, lookupType) => {
 };
 
 export const viewRecords = async (datatype, recid, access_token) => {
+  
   console.log('View Rec: ', datatype, recid, access_token);
   return axios(`${BASE_URL}/data/${datatype}/${recid}`, {
     method: 'GET',

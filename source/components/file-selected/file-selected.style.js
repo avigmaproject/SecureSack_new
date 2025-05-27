@@ -30,7 +30,8 @@ const styles = StyleSheet.create({
     },
     fileName: {
         marginLeft: 10,
-        fontFamily: 'PublicSans-Regular'
+        fontFamily: 'Montserrat-Regular',
+        color:"black"
     },
     fileSize: {
         alignItems: 'flex-end'

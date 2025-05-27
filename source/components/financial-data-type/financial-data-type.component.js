@@ -3,7 +3,7 @@ import {View, FlatList, Image, Text, TouchableOpacity, Alert} from 'react-native
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Title, Caption, TouchableRipple} from 'react-native-paper';
 import axios from 'axios';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import SimpleLineIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {financialDataTypeList, getDataAsType} from './financial-data-type.list';
@@ -23,25 +23,47 @@ class FinancialDataType extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   async componentDidMount() {
     const {navigation} = this.props;
+    this.getUserInfo();
     navigation.addListener('focus', async () => {
-      const userInfo = await AsyncStorage.getItem('userInfo');
-      if (userInfo) {
+      // const userInfo = await AsyncStorage.getItem('userInfo');
+      // console.log("userInfo===>",userInfo)
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+      // if (userInfo) {
         this.setState(
           {
-            userInfo: JSON.parse(userInfo),
+            // userInfo: JSON.parse(information),
             ...this.initialState,
           },
           () => {
             this.getType();
+            this.getUserInfo()
+            this.getData()
           },
         );
-      }
+      // }
     });
   }
-
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
+  
   componentDidUpdate(prevProps) {
     if (prevProps.archive !== this.props.archive) {
       this.getType();
@@ -53,10 +75,19 @@ class FinancialDataType extends Component {
   };
 
   getData = async (type) => {
+    console.log("type==>",type)
     const {archive, navigation} = this.props;
-    const {userInfo} = this.state;
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('information', information);
+    }
+    const accessToken =  this.userInfo.access_token;
+console.log('Access Token:', accessToken);
 
-    if (userInfo !== null) {
+    // console.log("dataType",dataType)
+    if ( this.userInfo !== null) {
       let config = {
         method: 'GET',
         url: `${BASE_URL}/data/${type}`,
@@ -66,21 +97,21 @@ class FinancialDataType extends Component {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + userInfo.access_token,
+          Authorization: 'Bearer ' +  this.userInfo.access_token,
         },
       };
 
       await axios(config)
         .then((res) => {
-          console.log('res: ', res.data);
+          console.log('res: ', res.data.data);
           this.updateArray(res.data.data.items, res.data.datatype.name);
         })
         .catch((error) => {
           console.log('Bank account error: ', error);
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Login'}],
-          });
+          // navigation.reset({
+          //   index: 0,
+          //   routes: [{name: 'Login'}],
+          // });
         });
     }
   };
@@ -105,7 +136,7 @@ class FinancialDataType extends Component {
             <Title style={styles.catTitle}>{this.getTitle(type, item)}</Title>
             <Caption>{this.getSubTitle(type, item)}</Caption>
             <View style={styles.arrowView}>
-              <SimpleLineIcons name="arrow-right" color="rgb(33, 47, 60)" size={15} />
+              <SimpleLineIcons name="keyboard-arrow-right" color="rgb(33, 47, 60)" size={15} />
             </View>
           </View>
         </View>

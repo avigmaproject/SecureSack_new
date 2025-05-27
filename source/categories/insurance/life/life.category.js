@@ -36,7 +36,7 @@ import {formatDate} from '../../../configuration/card-formatter/card-formatter';
 import {Color} from '../../../assets/color/color';
 import CopyClipboard from '../../../components/copy-clipboard/copy-clipboard.component';
 import ExternalLink from '../../../components/external-link/external-link.component';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from './life.style';
 
 class LifeInsurance extends Component {
@@ -90,19 +90,20 @@ class LifeInsurance extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
     BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            access_token: this.props.userData.userData.access_token,
+            access_token: this.userInfo.access_token,
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
+          this.getUserInfo()
         );
     });
   }
@@ -110,15 +111,33 @@ class LifeInsurance extends Component {
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', handler);
   }
-
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
     await viewRecords(
       'LifeInsurance',
       recid,
-      this.props.userData.userData.access_token,
+      this.userInfo.access_token
+      // this.props.userData.userData.access_token,
     )
       .then((response) => {
         console.log('View res: ', response);
@@ -128,13 +147,13 @@ class LifeInsurance extends Component {
       .catch((error) => {
         console.log('Error: ', error);
         this.setState({isLoader: false});
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -190,18 +209,30 @@ class LifeInsurance extends Component {
   };
 
   getBusinessEntity = async () => {
-    const {userData} = this.props;
-    if (userData !== null) {
-      await lookupType(userData.userData.access_token, 'RefBusinessEntity')
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    // const {userData} = this.props;
+    // if (userData !== null) {
+      await lookupType(this.userInfo.access_token, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
           this.setState({refArray: response});
         })
         .catch((error) => console.log('Ref Business error: ', error));
-    }
+    // }
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {
       access_token,
@@ -272,7 +303,7 @@ class LifeInsurance extends Component {
       Note: notes,
     });
 
-    await createOrUpdateRecord('LifeInsurance', recid, data, access_token)
+    await createOrUpdateRecord('LifeInsurance', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -283,18 +314,31 @@ class LifeInsurance extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
       'LifeInsurance',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token
     )
       .then((response) => navigation.goBack())
       .catch((error) => console.log('Error in delete', error));
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;
@@ -304,7 +348,8 @@ class LifeInsurance extends Component {
     await archiveRecords(
       'LifeInsurance',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token,
       data,
     )
       .then((response) => {
@@ -819,7 +864,7 @@ class LifeInsurance extends Component {
       <RefBusinessModal
         isModalVisible={this.state.refBusModal}
         changeModalVisibility={this.changeRefBusinessmModal}
-        access_token={this.props.userData.userData.access_token}
+        access_token={this.userInfo.access_token}
         refreshingList={this.refreshingList}
       />
     </View>

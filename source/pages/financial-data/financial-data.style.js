@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   title: {
-    fontFamily: 'PublicSans-Bold',
+    fontFamily: 'Montserrat-Bold',
     fontSize: 20,
     color: '#FFFFFF',
     marginLeft: 15,

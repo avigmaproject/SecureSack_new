@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     switcherText: {
         fontSize: 20,
         marginRight: 20,
-        fontFamily: "PublicSans-Regular"
+        fontFamily: "Montserrat-Regular"
     },
 })
 

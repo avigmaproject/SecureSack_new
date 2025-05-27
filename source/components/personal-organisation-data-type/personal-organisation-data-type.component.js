@@ -59,8 +59,14 @@ class PersonalOrganisationData extends Component {
   }
 
   getData = async (type) => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     const {userData, archive, navigation} = this.props;
-    if (userData !== null) {
+    // if (userData !== null) {
       let config = {
         method: 'GET',
         url: `${BASE_URL}/data/${type}`,
@@ -70,7 +76,7 @@ class PersonalOrganisationData extends Component {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + userData.userData.access_token,
+          Authorization: 'Bearer ' + this.userInfo.access_token,
         },
       };
       await axios(config)
@@ -85,7 +91,7 @@ class PersonalOrganisationData extends Component {
           routes: [{name: 'Login'}],
         })
           });
-    }
+    // }
   };
 
   updateArray = (items, type) => {

@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     fileView: {//
         fontSize: 16,
         marginLeft: 15,
-        fontFamily: 'PublicSans-Regular',
+        fontFamily: 'Montserrat-Regular',
         color: 'rgb(33, 47, 60)',
     },
     inputTag: {//
@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: '5%',
         flexDirection: 'row',
-        marginLeft: '2%'
+        marginLeft: '2%',
+        color:"black"
     },
     container: {
         padding: 7

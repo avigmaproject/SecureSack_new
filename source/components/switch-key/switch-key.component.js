@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {View, FlatList} from 'react-native';
-import {Text, Chip} from 'react-native-paper';
+import {Chip} from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import qs from 'qs';
 
 import {switchKey} from '../../configuration/api/api.functions';
 import styles from './switch-key.style';
@@ -9,17 +10,84 @@ import styles from './switch-key.style';
 const SwitchKey = ({type, recid, shareKeyId, refresh}) => {
   const [userData, setUserData] = useState(null);
 
-  useEffect(() => {
-    const loadUser = async () => {
+  const getUserData = async () => {
+    try {
       const info = await AsyncStorage.getItem('user_info');
       if (info) {
         const parsed = JSON.parse(info);
         setUserData(parsed);
       }
-    };
-    loadUser();
-  }, []);
+    } catch (err) {
+      console.log('Error reading user info:', err);
+    }
+  };
 
+  useEffect(() => {
+    getUserData();
+  }, []);
+  const switchTheKey = async (
+    type,
+    recid,
+    oldKeyId,
+    newKeyId,
+    refreshData,
+  ) => {
+    try {
+      const info = await AsyncStorage.getItem('user_info');
+      const userData = JSON.parse(info);
+  
+      if (!userData?.access_token) {
+        console.log('Access token not found');
+        return;
+      }
+  
+      const data = qs.stringify({
+        dataType: type,
+        itemId: recid,
+        oldKeyId: oldKeyId,
+        newKeyId: newKeyId,
+      });
+  
+      console.log('Switching with token:', userData.access_token, type);
+  
+      const response = await switchKey(userData.access_token, data);
+      console.log('Res Switch Key: ', response);
+  
+      refreshData?.(); // optional chaining
+    } catch (error) {
+      console.log('Switch key error: ', error);
+    }
+  };
+
+  const renderKey = (
+    item,
+    type,
+    recid,
+    shareKeyId,
+    index,
+    userData,
+    refreshData,
+  )=> {
+    if (!item.name) return null; // Skip blank-name items
+  
+    return (
+      <View key={index} style={styles.key}>
+         <Chip
+        onPress={() => {
+          if (typeof refreshData === 'function') {
+            refreshData();  // Call the refresh function
+          } else {
+            console.log('refreshData is not a function');
+          }
+        }}
+        mode={shareKeyId === item.id ? 'flat' : 'outlined'}>
+        {item.name}
+      </Chip>
+      </View>
+  );
+  };
+
+  // ✅ Don't render until userData is loaded
   if (!userData || !userData.shareKeys) return null;
 
   return (
@@ -29,54 +97,11 @@ const SwitchKey = ({type, recid, shareKeyId, refresh}) => {
         renderItem={({item, index}) =>
           renderKey(item, type, recid, shareKeyId, index, userData, refresh)
         }
-        horizontal={true}
+        horizontal
+        keyExtractor={(item, index) => item.id?.toString() || index.toString()}
       />
     </View>
   );
-};
-
-const renderKey = (
-  item,
-  type,
-  recid,
-  shareKeyId,
-  index,
-  userData,
-  refreshData,
-) => (
-  <View key={index} style={styles.key}>
-    <Chip
-      onPress={() => {
-        switchTheKey(type, recid, shareKeyId, item.id, userData, refreshData);
-      }}
-      mode={shareKeyId === item.id ? 'flat' : 'outlined'}>
-      {item.name}
-    </Chip>
-  </View>
-);
-
-const switchTheKey = async (
-  type,
-  recid,
-  oldKeyId,
-  newKeyId,
-  userData,
-  refreshData,
-) => {
-  let data = {
-    dataType: type,
-    itemId: recid,
-    oldKeyId: oldKeyId,
-    newKeyId: newKeyId,
-  };
-
-  try {
-    const res = await switchKey(userData.access_token, qs.stringify(data));
-    console.log('Res Switch Key: ', res);
-    refreshData();
-  } catch (err) {
-    console.log('Switch key error: ', err);
-  }
 };
 
 export default SwitchKey;

@@ -94,17 +94,23 @@ class CreditCard extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation} = this.props;
+    const {navigation, route} = this.props;
+    BackHandler.addEventListener('hardwareBackPress', this.onBack);
+    this.viewRecord()
+  
+    this.getUserInfo(); // ✅ Call the async method here
+  
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.state.editable)
-        BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
-          {access_token: this.userInfo?.access_token},
+          {
+          //  access_token: this.props.userData.userData.access_token,
+          access_token: this.userinfo?.access_token
+          },
           () => this.viewRecord(),
           this.getBusinessEntity(),
-          this.userInfo()
+          this.getUserInfo()
         );
     });
   }
@@ -116,6 +122,12 @@ class CreditCard extends Component {
   }
 
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
@@ -134,12 +146,12 @@ class CreditCard extends Component {
       .catch((error) => {
         console.log('Error: ', error);
         this.setState({isLoader: false});
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -299,6 +311,12 @@ class CreditCard extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
@@ -317,6 +335,12 @@ class CreditCard extends Component {
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;

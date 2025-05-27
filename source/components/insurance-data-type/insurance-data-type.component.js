@@ -11,7 +11,7 @@ import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Title, Caption, TouchableRipple} from 'react-native-paper';
 import axios from 'axios';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import SimpleLineIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {insuranceDataTypeList, getDataAsType} from './insurance-data-type.list';
 import {BASE_URL} from '../../configuration/api/api.types';
@@ -60,6 +60,12 @@ class InsuranceDataType extends Component {
   }
 
   getData = async (type) => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {userData, archive, navigation} = this.props;
     if (userData !== null) {
       let config = {
@@ -71,7 +77,7 @@ class InsuranceDataType extends Component {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + userData.userData.access_token,
+          Authorization: 'Bearer ' + this.userInfo.access_token,
         },
       };
       await axios(config)
@@ -81,10 +87,10 @@ class InsuranceDataType extends Component {
         })
         .catch((error) => {
           console.log('Bank account error: ', error);
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Login'}],
-          });
+          // navigation.reset({
+          //   index: 0,
+          //   routes: [{name: 'Login'}],
+          // });
         });
     }
   };
@@ -193,7 +199,7 @@ class InsuranceDataType extends Component {
             <Caption>{this.getSubTitle(type, item)}</Caption>
             <View style={styles.arrowView}>
               <SimpleLineIcons
-                name="arrow-right"
+                name="keyboard-arrow-right"
                 color="rgb(33, 47, 60)"
                 size={15}
               />

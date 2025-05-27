@@ -77,7 +77,7 @@ class Passport extends Component {
     BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
             access_token: this.userInfo?.access_token,
@@ -104,6 +104,12 @@ class Passport extends Component {
     }
   };
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
@@ -121,13 +127,13 @@ class Passport extends Component {
       .catch((error) => {
         console.log('Error: ', error);
         this.setState({isLoader: false});
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -227,14 +233,20 @@ class Passport extends Component {
       })
       .catch((error) => {
         this.setState({isLoader: false});
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
@@ -246,14 +258,20 @@ class Passport extends Component {
       .then((response) => navigation.goBack())
       .catch((error) => {
         console.log('Error in delete', error);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;
@@ -275,10 +293,10 @@ class Passport extends Component {
       .catch((error) => {
         this.setState({isLoader: false});
         console.log('Error in delete', error);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
   };
 

@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 15,
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     paddingBottom: 10,
   },
   icon: {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   labelText: {
     fontSize: 11,
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: 'rgba(33, 47, 60, 0.5)'
   }
 });

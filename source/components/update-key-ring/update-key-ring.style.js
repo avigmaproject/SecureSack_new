@@ -8,7 +8,7 @@ const styles = StyleSheet.create({
     },
     title: {
 
-        fontFamily: 'PublicSans-Regular'
+        fontFamily: 'Montserrat-Regular'
     },
     tiny: {
     marginVertical: 2,

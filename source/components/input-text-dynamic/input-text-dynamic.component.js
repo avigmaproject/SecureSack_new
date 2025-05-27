@@ -23,9 +23,9 @@ const InputTextDynamic = ({
         }}
         keyboardType={keyboardType}
         disabled={!editable}
-        style={styles.input}
+        style={[styles.input, { color: 'black' }]}
         selectionColor={color}
-        theme={{ colors: { primary: color } }}
+        theme={{ colors: { primary: color ,text: 'black',} }}
         underlineColor={'rgb(33, 47, 60)'}
         placeholder={example} // will not show if label is used
       />

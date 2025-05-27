@@ -18,7 +18,7 @@ const styles = {
     paddingHorizontal: 20,
   },
   toastText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
   },
   circle: {

@@ -105,7 +105,7 @@ class ServiceAccount extends Component {
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
       // if (this.props.userData && this.props.userData.userData)
-      if(this.userInfo)
+      // if(this.userInfo)
         this.setState(
           {
             // access_token: this.props.userData.userData.access_token,
@@ -133,10 +133,20 @@ class ServiceAccount extends Component {
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
   }
-
+  refreshData = () => {
+    this.viewRecord();
+  };
   viewRecord = async () => {
+    console.log("click here")
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
+   
     this.setState({isLoader: true});
     await viewRecords(
       'ServiceAccount',
@@ -160,7 +170,7 @@ class ServiceAccount extends Component {
         });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   setViewData = (data) => {
@@ -227,27 +237,39 @@ class ServiceAccount extends Component {
   };
 
   getBusinessEntity = async () => {
-    const {userData} = this.props;
-    if (userData !== null) {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    // const {userData} = this.props;
+    // if (userData !== null) {
       await lookupType(this.userInfo?.access_token, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
           this.setState({refArray: response});
         })
         .catch((error) => console.log('Ref Business error: ', error));
-    }
+    // }
   };
 
   getCreditCard = async () => {
-    const {userData} = this.props;
-    if (userData !== null) {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    // const {userData} = this.props;
+    // if (userData !== null) {
       await lookupType(this.userInfo?.access_token, 'CreditCard')
         .then((response) => {
           console.log('Response credit card: ', response);
           this.setState({creditCardArray: response});
         })
         .catch((error) => console.log('Ref Credit card error: ', error));
-    }
+    // }
   };
 
   submit = async () => {
@@ -358,13 +380,14 @@ class ServiceAccount extends Component {
       // this.props.userData.userData.access_token,
       this.userInfo?.access_token
     )
+    console.log("recid",recid)
       .then((response) => navigation.goBack())
       .catch((error) => {
         console.log('Error in delete', error);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
   };
 

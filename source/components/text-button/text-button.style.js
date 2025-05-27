@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
         marginTop :15
     },
     label: {
-        fontFamily: 'PublicSans-SemiBold',
+        fontFamily: 'Montserrat-SemiBold',
         fontSize: 16,
         color: Color.orange,
         alignSelf: 'center'

@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   title: {
-    fontFamily: 'PublicSans-Bold',
+    fontFamily: 'Montserrat-Bold',
     fontSize: 20,
     marginLeft: 15,
     width: '55%'

@@ -28,10 +28,11 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   fileName: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 12,
     textAlign: 'center',
-    margin: 5
+    margin: 5,
+    color:"black"
   },
 });
 

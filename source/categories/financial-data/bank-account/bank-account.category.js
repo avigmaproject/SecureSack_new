@@ -119,13 +119,14 @@ class BankAccounts extends Component {
   componentDidMount() {
     const {navigation, route} = this.props;
     BackHandler.addEventListener('hardwareBackPress', this.onBack);
-
+    
   
-    this.getUserInfo(); // ✅ Call the async method here
+    // this.getUserInfo(); // ✅ Call the async method here
   
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
+      // if (this.userInfo && this.userInfo)
         this.setState(
           {
           //  access_token: this.props.userData.userData.access_token,
@@ -133,6 +134,7 @@ class BankAccounts extends Component {
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
+          this.getUserInfo()
         );
     });
   }
@@ -156,6 +158,13 @@ class BankAccounts extends Component {
   }
 
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      // console.log('User Info stored in variable:', this.userInfo);
+    }
+    // console.log("  this.userInfo?.access_token",  this.userInfo?.access_token)
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
@@ -181,7 +190,7 @@ class BankAccounts extends Component {
         });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -265,8 +274,14 @@ class BankAccounts extends Component {
   };
 
   getBusinessEntity = async () => {
-    const {userData} = this.props;
-    if (userData !== null) {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    // const {userData} = this.props;
+    if (  this.userInfo !== null) {
       await lookupType(this.userInfo?.access_tokenn, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
@@ -288,6 +303,7 @@ class BankAccounts extends Component {
           value={this.state.name}
           color={Color.lightishBlue}
           editable={this.state.editable}
+        
         />
       </View>
       <View style={[styles.inputContainer, {zIndex: 1000}]}>
@@ -1164,6 +1180,7 @@ class BankAccounts extends Component {
   };
 
   onEdit = () => {
+    console.log("hiii")
     this.setState({editable: false, showQuestion: false}, () =>
       console.log(this.state.editable),
     );
@@ -1226,7 +1243,7 @@ class BankAccounts extends Component {
     } = this.state;
     const {route, navigation} = this.props;
     const {title, type, mode, recid} = route.params;
-    console.log('Share Id: ', shareKeyId);
+    console.log('Share Id: ', title, type, mode, recid);
     return (
       <NativeBaseProvider>
         <SafeAreaView style={styles.outerView}>

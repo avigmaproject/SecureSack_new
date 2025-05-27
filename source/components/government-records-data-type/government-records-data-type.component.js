@@ -4,8 +4,8 @@ import {connect} from 'react-redux';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {Title, Caption, TouchableRipple} from 'react-native-paper';
 import axios from 'axios';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-
+import SimpleLineIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   governmentRecordsDataTypeList,
   getDataAsType,
@@ -189,7 +189,7 @@ class GovernmentRecordsData extends Component {
             <Caption>{this.getSubTitle(type, item)}</Caption>
             <View style={styles.arrowView}>
               <SimpleLineIcons
-                name="arrow-right"
+                name="keyboard-arrow-right"
                 color="rgb(33, 47, 60)"
                 size={15}
               />

@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontFamily: 'PublicSans-SemiBold',
+    fontFamily: 'Montserrat-SemiBold',
     color: 'rgb(33, 47, 60)',
   },
   addView: {

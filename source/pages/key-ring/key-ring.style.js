@@ -8,11 +8,11 @@ const styles = StyleSheet.create({
     paddingBottom: 15
   },
   title: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 18,
   },
   caption: {
-    fontFamily: 'PublicSans-ExtraLight',
+    fontFamily: 'Montserrat-ExtraLight',
     fontSize: 16,
     marginLeft: 20, 
   },
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 17,
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     textAlign: 'center',
   },
   miniContainer: {

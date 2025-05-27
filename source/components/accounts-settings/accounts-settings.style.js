@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 18,
     color:"rgb(33, 47, 60)"
   },
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   note: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 15,
     marginTop: 10,
     color:"rgb(33, 47, 60)"

@@ -12,7 +12,7 @@ import {Text, TextInput} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
 import {NativeBaseProvider} from 'native-base';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component.js';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component.js';
 import ModalPicker from '../../../components/modal-picker/modal-picker.component.js';
@@ -49,32 +49,51 @@ class Notes extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
     BackHandler.addEventListener('hardwareBackPress', this.onBack);
 
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            access_token: this.props.userData.userData.access_token,
+            // access_token: this.props.userData.userData.access_token,
+            access_token:this.userInfo?.access_token
           },
           () => this.viewRecord(),
+          this.getUserInfo()
         );
     });
   }
-
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+       
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', handler);
   }
 
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
-    await viewRecords('Notes', recid, this.props.userData.userData.access_token)
+    await viewRecords('Notes', recid, this.userInfo.access_token)
       .then((response) => {
         console.log('View res: ', response);
         this.setViewData(response.data);
@@ -89,7 +108,7 @@ class Notes extends Component {
         });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -107,6 +126,12 @@ class Notes extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     this.setState({isLoader: true});
     const {name, notes, access_token} = this.state;
 
@@ -116,7 +141,7 @@ class Notes extends Component {
     });
     const {navigation, route} = this.props;
     const {recid} = route.params;
-    await createOrUpdateRecord('Notes', recid, data, access_token)
+    await createOrUpdateRecord('Notes', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -131,12 +156,19 @@ class Notes extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
       'Notes',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token
     )
       .then((response) => navigation.goBack())
       .catch((error) => {
@@ -149,6 +181,12 @@ class Notes extends Component {
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;
@@ -158,7 +196,8 @@ class Notes extends Component {
     await archiveRecords(
       'Notes',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token,
       data,
     )
       .then((response) => {
@@ -234,7 +273,7 @@ class Notes extends Component {
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable:false}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {

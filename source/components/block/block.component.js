@@ -10,7 +10,7 @@ const Block = ({item, navigation, index}) => {
       onPress={() => navigation.navigate(item.navigation)}
       style={[
         styles.container,
-        index % 2 === 0 ? {marginRight: 7} : {marginLeft: 7},
+        // index % 2 === 0 ? {marginRight: 5} : {marginLeft: 5},
       ]}>
       <ImageBackground
         source={item.background}

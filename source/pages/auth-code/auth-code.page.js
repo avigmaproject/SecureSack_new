@@ -247,7 +247,7 @@ class AuthCode extends Component {
               value={authcode}
               keyboardType="number-pad"
               icon={'lock'}
-              show={true}
+              // show={true}
             />
           </View>
           <View style={styles.buttonContainer}>

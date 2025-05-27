@@ -10,12 +10,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    fontFamily: 'PublicSans-Bold'
+    fontFamily: 'Montserrat-Bold'
   },
   caption: {
     fontSize: 14,
     lineHeight: 14,
-    fontFamily: 'PublicSans-ExtraLight'
+    fontFamily: 'Montserrat-ExtraLight'
   },
   row: {
     marginTop: 20,

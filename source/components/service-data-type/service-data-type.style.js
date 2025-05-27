@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     marginLeft: 15,
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: 'rgb(33, 47, 60)',
   },
   addView: {
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   viewAllText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: 'rgb(33, 47, 60)',
     fontSize: 11,
   },

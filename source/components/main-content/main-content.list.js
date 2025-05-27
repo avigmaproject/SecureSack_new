@@ -35,8 +35,8 @@ export const mainContentList = [
     key: 5,
     title: 'Government' + '\n' + 'Records',
     background: require('../../assets/png-images/Government-Records/government-records.png'),
-    icon: require('../../assets/png-images/Government-Records-Icon/government-records-icon.png'),
-    titleColor: '#FFFFFF',
+    icon: require('../../assets/png-images/Government-Records-Icon/government.png'),
+    titleColor: '#ffff',
     navigation: 'GovernmentRecords',
   },
   {

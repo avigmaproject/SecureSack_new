@@ -86,11 +86,12 @@ class ConsumerLoan extends Component {
     BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {access_token: this.userInfo?.access_token},
           () => this.viewRecord(),
           this.getBusinessEntity(),
+          this.getUserInfo()
         );
     });
   }
@@ -112,6 +113,13 @@ class ConsumerLoan extends Component {
   }
 
   viewRecord = async () => {
+    console.log("hererreee")
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+       
+      }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
@@ -132,7 +140,7 @@ class ConsumerLoan extends Component {
           routes: [{name: 'Login'}],
         });
       });
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -241,6 +249,12 @@ class ConsumerLoan extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
@@ -251,10 +265,10 @@ class ConsumerLoan extends Component {
       .then((response) => navigation.goBack())
       .catch((error) => {
         console.log('Error in delete', error);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
   };
 

@@ -3,7 +3,7 @@ import {StyleSheet} from 'react-native';
 const styles = StyleSheet.create({
   input: {
     color: '#FFFFFF',
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     padding: 15,
     flex: 1,
     fontSize: 17,

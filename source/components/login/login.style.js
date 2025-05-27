@@ -5,7 +5,7 @@ const windowHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   toastText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
   },
   inputContainer: {
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   extrasText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
     fontSize: 12,
     textAlign: 'center'

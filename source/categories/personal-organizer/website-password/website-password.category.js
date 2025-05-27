@@ -12,7 +12,7 @@ import {Text} from 'react-native-paper';
 import qs from 'qs';
 import {connect} from 'react-redux';
 import {NativeBaseProvider} from 'native-base';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputTextDynamic from '../../../components/input-text-dynamic/input-text-dynamic.component';
 import InputTextIconDynamic from '../../../components/input-text-icon-dynamic/input-text-icon-dynamic.component';
 import ModalPicker from '../../../components/modal-picker/modal-picker.component';
@@ -60,19 +60,20 @@ class WebSiteAccount extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
     BackHandler.addEventListener('hardwareBackPress', this.onBack);
 
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            access_token: this.props.userData.userData.access_token,
+            access_token:this.userInfo?.access_token
           },
           () => this.viewRecord(),
+          this.getUserInfo()
         );
     });
   }
@@ -80,15 +81,33 @@ class WebSiteAccount extends Component {
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', handler);
 }
-
+getUserInfo = async () => {
+  try {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+  } catch (error) {
+    console.log('Error fetching user info:', error);
+  }
+};
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
     await viewRecords(
       'WebSiteAccount',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token
     )
       .then((response) => {
         console.log('View res: ', response);
@@ -106,7 +125,7 @@ class WebSiteAccount extends Component {
         })
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -145,6 +164,12 @@ class WebSiteAccount extends Component {
   };
 
   submit = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     this.setState({isLoader: true});
     const {
       name,
@@ -176,7 +201,7 @@ class WebSiteAccount extends Component {
       Comment: notes,
     });
 
-    await createOrUpdateRecord('WebSiteAccount', recid, data, access_token)
+    await createOrUpdateRecord('WebSiteAccount', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
         navigation.goBack();
@@ -191,12 +216,19 @@ class WebSiteAccount extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
       'WebSiteAccount',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token
     )
       .then((response) => navigation.goBack())
       .catch((error) => {console.log('Error in delete', error)
@@ -208,6 +240,12 @@ class WebSiteAccount extends Component {
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+     
+    }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;
@@ -217,7 +255,8 @@ class WebSiteAccount extends Component {
     await archiveRecords(
       'WebSiteAccount',
       recid,
-      this.props.userData.userData.access_token,
+      // this.props.userData.userData.access_token,
+      this.userInfo.access_token,
       data,
     )
       .then((response) => {

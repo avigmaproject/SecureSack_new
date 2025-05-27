@@ -84,7 +84,7 @@ class RewardProgram extends Component {
 
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
            access_token:this.userInfo?.access_token,
@@ -112,6 +112,12 @@ class RewardProgram extends Component {
   }
 
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     console.log({mode});
@@ -138,7 +144,7 @@ class RewardProgram extends Component {
         });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -179,15 +185,21 @@ class RewardProgram extends Component {
   };
 
   getBusinessEntity = async () => {
-    const {userData} = this.props;
-    if (userData !== null) {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    // const {userData} = this.props;
+    // if (userData !== null) {
       await lookupType( this.userInfo?.access_token, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
           this.setState({refArray: response});
         })
         .catch((error) => console.log('Ref Business error: ', error));
-    }
+    // }
   };
 
   checkSecurityQuestions = (data) => {
@@ -265,6 +277,12 @@ class RewardProgram extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
@@ -283,6 +301,12 @@ class RewardProgram extends Component {
   };
 
   archive = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     this.setState({isLoader: true});
     const {navigation, route} = this.props;
     const {recid} = route.params;

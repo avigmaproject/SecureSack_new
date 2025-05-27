@@ -101,7 +101,7 @@ class Mortgage extends Component {
     BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
-      if (this.props.userData && this.props.userData.userData)
+      // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {access_token: this.userInfo?.access_token},
           () => this.viewRecord(),
@@ -126,6 +126,12 @@ class Mortgage extends Component {
   }
 
   viewRecord = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
     this.setState({isLoader: true});
@@ -149,7 +155,7 @@ class Mortgage extends Component {
           routes: [{name: 'Login'}],
         });
       });
-    if (mode === 'Add') this.setState({editable: false});
+    if (mode === 'Add') this.setState({editable: true});
   };
 
   refreshData = () => {
@@ -296,6 +302,12 @@ class Mortgage extends Component {
   };
 
   delete = async () => {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
     const {navigation, route} = this.props;
     const {recid} = route.params;
     await deleteRecords(
@@ -782,8 +794,14 @@ class Mortgage extends Component {
   };
 
   getBusinessEntity = async () => {
-    const {userData} = this.props;
-    if (userData !== null) {
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    // const {userData} = this.props;
+    if (this.userInfo !== null) {
       await lookupType( this.userInfo?.access_token, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
@@ -862,7 +880,7 @@ class Mortgage extends Component {
   };
 
   onEdit = () => {
-    this.setState({editable: false});
+    this.setState({editable: true});
   };
 
   onDelete = () => {

@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   extrasText: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
     fontSize: 12,
     textAlign: 'center'

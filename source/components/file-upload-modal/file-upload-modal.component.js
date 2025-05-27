@@ -12,7 +12,7 @@ import FormData from 'form-data';
 import {Toast, NativeBaseProvider} from 'native-base';
 import DocumentPicker from 'react-native-document-picker';
 import Icons from 'react-native-vector-icons/MaterialIcons';
-import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import SimpleLineIcons from 'react-native-vector-icons/AntDesign';
 import {Chip} from 'react-native-paper';
 import qs from 'qs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,6 +30,7 @@ import {Color} from '../../assets/color/color';
 import FileSelected from '../file-selected/file-selected.component';
 
 import styles from './file-upload-modal.style';
+import { color } from 'native-base/lib/typescript/theme/styled-system';
 
 class FileUploadModal extends Component {
   initialState = {
@@ -282,13 +283,15 @@ class FileUploadModal extends Component {
               this.setState({tagCat});
             }}
             placeholder="Add Tag"
+          
+            style={{color:"black"}}
             color={Color.orange}
           />
         </View>
         <TouchableOpacity
           onPress={() => this.addTags()}
           style={{alignItems: 'center', justifyContent: 'center'}}>
-          <SimpleLineIcons name="plus" size={24} />
+          <SimpleLineIcons name="pluscircleo" size={24} color="black" />
         </TouchableOpacity>
       </View>
     </View>

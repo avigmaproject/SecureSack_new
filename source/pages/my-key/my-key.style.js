@@ -11,15 +11,15 @@ const styles = StyleSheet.create({
         marginTop: 10
     },
     title: {
-        fontFamily: 'PublicSans-SemiBold',
+        fontFamily: 'Montserrat-SemiBold',
         marginLeft:10
     },
     caption: {
-        fontFamily: 'PublicSans-Regular',
+        fontFamily: 'Montserrat-Regular',
         marginLeft:10
     },
     text: {
-        fontFamily: 'PublicSans-Regular',
+        fontFamily: 'Montserrat-Regular',
         fontSize: 20,
         marginTop: 20,
         marginLeft:10
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   titl: {
-    fontFamily: 'PublicSans-Bold',
+    fontFamily: 'Montserrat-Bold',
     fontSize: 20,
     color: 'rgb(33, 47, 60)',
     marginLeft: 10,

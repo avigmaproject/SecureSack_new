@@ -72,13 +72,22 @@ class Home extends Component {
   };
 
   getCountry = async () => {
-    const {country} = this.props.country;
-    const {access_token} = this.state;
-    if (country.length === 0) {
-      await lookupType(access_token, 'RefCountry')
+    let information = await AsyncStorage.getItem('user_info');
+    let info
+    console.log('Check user info: ',information);
+      if (information !== null) {
+         info = JSON.parse(information);
+        userInfo(info);
+        this.setState({access_token: info.access_token}
+        );
+      }
+    // const {country} = this.props.country;
+    // const {access_token} = this.state;
+    // if (country.length === 0) {
+      await lookupType(info.access_token, 'RefCountry')
         .then((res) => this.filter(res))
         .catch((err) => console.log('Error in fetching country: ', err));
-    }
+    // }
   };
 
   filter = (data) => {

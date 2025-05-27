@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   title: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 18,
   },
   caption: {
-    fontFamily: 'PublicSans-Regular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 16,
     marginLeft: 20,
   },
