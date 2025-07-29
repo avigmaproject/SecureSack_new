@@ -37,7 +37,7 @@ import styles from './identity.style';
 class IdentificationCards extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     modal: '',
     array: [],
     access_token: '',
@@ -53,6 +53,7 @@ class IdentificationCards extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList:'',
     notes: '',
     changes: false,
     shareKeyId: '',
@@ -77,7 +78,9 @@ class IdentificationCards extends Component {
             access_token: this.userInfo?.access_token
           },
           () => this.viewRecord(),
-          this.getUserInfo()
+          this.getUserInfo(),
+          this.loadCountries()
+
         );
     });
   }
@@ -85,6 +88,17 @@ class IdentificationCards extends Component {
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', handler);
 }
+loadCountries = async () => {
+  try {
+    const saved = await AsyncStorage.getItem('countries');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      this.setState({ countriesList: parsed });
+    }
+  } catch (err) {
+    console.error('Error loading countries:', err);
+  }
+};
 getUserInfo = async () => {
   try {
     const information = await AsyncStorage.getItem('user_info');
@@ -201,7 +215,8 @@ getUserInfo = async () => {
     await createOrUpdateRecord('IdentificationCards', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('GovernmentRecords');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -227,7 +242,7 @@ getUserInfo = async () => {
       // this.props.userData.userData.access_token,
       this.userInfo?.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>    this.props.navigation.navigate('GovernmentRecords'))
       .catch((error) => {
         console.log('Error in delete', error)
         navigation.reset({
@@ -260,7 +275,8 @@ getUserInfo = async () => {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('GovernmentRecords');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -336,18 +352,19 @@ getUserInfo = async () => {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
-          onPress={() =>
-            this.setState({
-              modal: true,
-              array: this.props.country.country,
-              key: 'country',
-            }, () => this.changesMade())
-          }
+           label={this.state.country || 'Country'}
+           onPress={() =>
+             this.setState(
+               {
+                 modal: true,
+                 array: this.state.countriesList,
+                 key: 'country',
+               },
+               () => this.changesMade(),
+             )
+           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -426,7 +443,7 @@ getUserInfo = async () => {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -486,10 +503,11 @@ changesMade = () => {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -522,13 +540,14 @@ changesMade = () => {
       'Do you want to save changes ?',
       [
         {text: 'Save', onPress: () => this.submit()},
-        {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+        {text: 'Cancel', onPress: () =>    this.props.navigation.navigate('GovernmentRecords'), style: 'cancel'},
       ],
       {cancelable: false},
       //clicking out side of alert will not cancel
     );
     }else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('GovernmentRecords');
     }
     return true
   }

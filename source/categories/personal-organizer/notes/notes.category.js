@@ -35,7 +35,7 @@ import styles from './notes.style';
 class Notes extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     access_token: '',
     name: '',
     notes: '',
@@ -51,22 +51,39 @@ class Notes extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
-
-    navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-        this.setState(
-          {
-            // access_token: this.props.userData.userData.access_token,
-            access_token:this.userInfo?.access_token
-          },
-          () => this.viewRecord(),
-          this.getUserInfo()
-        );
+    const {navigation} = this.props;
+  
+    // Handle Android back press
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('PersonalOrganisation');
+        return true;
+      }
+    );
+  
+    // Animate when screen is focused
+    this.focusListener = navigation.addListener('focus', () => {
+      
+  
+      // Load data
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getUserInfo();
+         
+        }
+      );
     });
   }
+ 
+
+  componentWillUnmount() {
+    if (this.backHandler) this.backHandler.remove();
+}
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -79,9 +96,7 @@ class Notes extends Component {
       console.log('Error fetching user info:', error);
     }
   };
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', handler);
-  }
+
 
   viewRecord = async () => {
     const information = await AsyncStorage.getItem('user_info');
@@ -144,7 +159,8 @@ class Notes extends Component {
     await createOrUpdateRecord('Notes', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalOrganisation');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -170,7 +186,7 @@ class Notes extends Component {
       // this.props.userData.userData.access_token,
       this.userInfo.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>this.props.navigation.navigate('PersonalOrganisation'))
       .catch((error) => {
         console.log('Error in delete', error);
         navigation.reset({
@@ -203,7 +219,8 @@ class Notes extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalOrganisation');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -270,10 +287,11 @@ class Notes extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable:false}, () => console.log(this.state.editable));
+    this.setState({editable:true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -306,13 +324,14 @@ class Notes extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('PersonalOrganisation'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('PersonalOrganisation');
     }
     return true;
   };

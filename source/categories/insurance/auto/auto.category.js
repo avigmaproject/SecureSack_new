@@ -42,7 +42,7 @@ import styles from './auto.style';
 class AutoInsurance extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     refBusModal: false,
     access_token: '',
     modal: '',
@@ -156,7 +156,7 @@ class AutoInsurance extends Component {
         });
       });
     this.setState({isLoader: false});
-    if (mode === 'Add') this.setState({editable: false, hideResult: false});
+    if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
   refreshData = () => {
@@ -310,7 +310,8 @@ class AutoInsurance extends Component {
     await createOrUpdateRecord('AutoInsurance', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -332,7 +333,7 @@ class AutoInsurance extends Component {
       // this.props.userData.userData.access_token,
       this.userInfo?.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('Insurance'))
       .catch((error) => console.log('Error in delete', error));
   };
 
@@ -359,7 +360,8 @@ class AutoInsurance extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -422,7 +424,7 @@ class AutoInsurance extends Component {
           keyboardType="default"
           value={this.state.issuer}
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuer) => this.showAutoComplete(issuer)}
           clicked={this.state.issuerClicked}
@@ -437,7 +439,7 @@ class AutoInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.premium}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -450,7 +452,7 @@ class AutoInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.installment}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -471,7 +473,7 @@ class AutoInsurance extends Component {
             )
           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Due"
         />
       </View>
@@ -513,7 +515,7 @@ class AutoInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.total}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -754,7 +756,7 @@ class AutoInsurance extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -854,10 +856,11 @@ class AutoInsurance extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -890,13 +893,14 @@ class AutoInsurance extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>  this.props.navigation.navigate('Insurance'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('Insurance');
     }
     return true;
   };

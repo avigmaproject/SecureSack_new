@@ -67,7 +67,7 @@ class InsuranceDataType extends Component {
       console.log('User Info stored in variable:', this.userInfo);
     }
     const {userData, archive, navigation} = this.props;
-    if (userData !== null) {
+    if (this.userInfo !== null) {
       let config = {
         method: 'GET',
         url: `${BASE_URL}/data/${type}`,
@@ -123,10 +123,10 @@ class InsuranceDataType extends Component {
           data={
             category === undefined
               ? category
-              : category.slice(0, show ? category.length : 3)
+              : category.slice(0, show ? category.length : 2)
           }
           renderItem={({item}) => this.renderTitleSubtitle(item, type, title)}
-          maxToRenderPerBatch={show ? category.length : 3}
+          maxToRenderPerBatch={show ? category.length : 2}
         />
         {this.viewAll(category, show, index)}
       </View>
@@ -136,7 +136,7 @@ class InsuranceDataType extends Component {
   viewAll = (category, show, index) => {
     const {isExpanded} = this.state;
     if (category !== undefined) {
-      if (category.length > 3) return this.viewAllComponent(index, show);
+      if (category.length > 2) return this.viewAllComponent(index, show);
     }
   };
 

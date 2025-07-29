@@ -21,7 +21,7 @@ import styles from './service-data-type.style';
 class ServiceDataType extends Component {
   initialState = {
     dataType: serviceDataTypeList,
-    userInfo: null,
+   
   };
 
   constructor(props) {
@@ -30,11 +30,11 @@ class ServiceDataType extends Component {
       ...this.initialState,
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation} = this.props;
     navigation.addListener('focus', () => {
-      this.loadUserInfo();
+    this.getUserInfo()
       this.getType();
       this.setState(this.initialState);
     });
@@ -47,7 +47,18 @@ class ServiceDataType extends Component {
       this.setState({userInfo: parsed});
     }
   };
-
+  getUserInfo = async () => {
+    try {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
+    } catch (error) {
+      console.log('Error fetching user info:', error);
+    }
+  };
   componentDidUpdate(prevProps) {
     if (prevProps.archive !== this.props.archive) {
       this.getType();
@@ -60,9 +71,14 @@ class ServiceDataType extends Component {
 
   getData = async (type) => {
     const {archive, navigation} = this.props;
-    const {userInfo} = this.state;
-
-    if (userInfo !== null) {
+    // const {userInfo} = this.state;
+    const information = await AsyncStorage.getItem('user_info');
+    if (information) {
+      const parsedInfo = JSON.parse(information);
+      this.userInfo = parsedInfo; // 👈 stored in class variable
+      console.log('User Info stored in variable:', this.userInfo);
+    }
+    if (this.userInfo !== null) {
       let config = {
         method: 'GET',
         url: `${BASE_URL}/data/${type}`,
@@ -72,7 +88,7 @@ class ServiceDataType extends Component {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + userInfo.access_token,
+          Authorization: 'Bearer ' + this.userInfo?.access_token,
         },
       };
 
@@ -115,9 +131,9 @@ class ServiceDataType extends Component {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={category === undefined ? category : category.slice(0, show ? category.length : 3)}
+          data={category === undefined ? category : category.slice(0, show ? category.length : 2)}
           renderItem={({item}) => this.renderTitleSubtitle(item, type, title)}
-          maxToRenderPerBatch={show ? category.length : 3}
+          maxToRenderPerBatch={show ? category.length : 2}
         />
         {this.viewAll(category, index, show)}
       </View>
@@ -125,7 +141,7 @@ class ServiceDataType extends Component {
   };
 
   viewAll = (category, index, show) => {
-    if (category !== undefined && category.length > 3) {
+    if (category !== undefined && category.length > 2) {
       return this.viewAllComponent(index, show);
     }
   };
@@ -186,11 +202,12 @@ class ServiceDataType extends Component {
   };
 
   getTitle = (type, item) => {
+    console.log("titlllleeeee",item)
     switch (type) {
       case 'ServiceAccount':
         return item.ServiceName;
       case 'RewardProgram':
-        return item.NumberOfPoints;
+        return item.Name;
       default:
         return '';
     }
@@ -201,7 +218,7 @@ class ServiceDataType extends Component {
       case 'ServiceAccount':
         return item.AccountNumber;
       case 'RewardProgram':
-        return item.Name;
+        return item.AccountNumber;
       default:
         return '';
     }

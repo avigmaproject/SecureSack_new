@@ -69,11 +69,12 @@ class Mortgage extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList:'',
     term: '',
     refiance: '',
     repayment: '',
     access_token: '',
-    editable: true,
+    editable: false,
     hideResult: true,
     refArray: [],
     issuer: '',
@@ -98,7 +99,11 @@ class Mortgage extends Component {
   userInfo = null;
   componentDidMount() {
     const {navigation} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.navigation.navigate('FinancialData');
+      return true; // prevent default back behavior
+    });
+    
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
       // if (this.props.userData && this.props.userData.userData)
@@ -106,9 +111,21 @@ class Mortgage extends Component {
           {access_token: this.userInfo?.access_token},
           () => this.viewRecord(),
           this.getBusinessEntity(),
+          this.loadCountries()
         );
     });
   }
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -290,7 +307,8 @@ class Mortgage extends Component {
     await createOrUpdateRecord('Mortgage', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -315,7 +333,7 @@ class Mortgage extends Component {
       recid,
       this.userInfo?.access_token,
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('FinancialData'))
       .catch((error) => {
         console.log('Error in delete', error);
         navigation.reset({
@@ -340,7 +358,8 @@ class Mortgage extends Component {
     )
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -394,7 +413,7 @@ class Mortgage extends Component {
           keyboardType="default"
           value={this.state.issuer}
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuer) => this.showAutoComplete(issuer)}
           clicked={this.state.issuerClicked}
@@ -413,8 +432,8 @@ class Mortgage extends Component {
               () => this.changesMade(),
             )
           }
-          // editable={this.state.editable}
-          editable={false}
+          editable={!this.state.editable}
+          // editable={false}
           name="Term"
         />
       </View>
@@ -427,7 +446,7 @@ class Mortgage extends Component {
           }
           color={Color.lightishBlue}
           value={this.state.loanAmnt}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           keyboardType="number-pad"
         />
       </View>
@@ -441,7 +460,7 @@ class Mortgage extends Component {
           keyboardType="default"
           color={Color.lightishBlue}
           value={this.state.mortgageRate}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           keyboardType="number-pad"
         />
       </View>
@@ -684,20 +703,18 @@ class Mortgage extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
+          label={this.state.country || 'Country'}
           onPress={() =>
             this.setState(
               {
                 modal: true,
-                array: this.props.country.country,
+                array: this.state.countriesList,
                 key: 'country',
               },
               () => this.changesMade(),
             )
           }
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -724,8 +741,8 @@ class Mortgage extends Component {
                 () => this.changesMade(),
               )
             }
-            // editable={this.state.editable}
-            editable={false}
+            editable={!this.state.editable}
+           
             name="Refianced"
           />
         </View>
@@ -746,8 +763,8 @@ class Mortgage extends Component {
                 () => this.changesMade(),
               )
             }
-            // editable={this.state.editable}
-            editable={false}
+            editable={!this.state.editable}
+            // editable={false}
             name="Prepayment Penalty"
           />
         </View>
@@ -758,7 +775,7 @@ class Mortgage extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -877,6 +894,7 @@ class Mortgage extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false});
   };
 
   onEdit = () => {
@@ -913,13 +931,14 @@ class Mortgage extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('FinancialData'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('FinancialData');
     }
     return true;
   };

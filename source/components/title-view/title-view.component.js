@@ -16,9 +16,8 @@ class TitleView extends Component {
         return this.add(theme, type, editable);
         break;
       case 'View':
-        return editable
-          ? this.view(theme, type, editable)
-          : this.add(theme, type, editable);
+      
+        return !editable ? this.view(theme,type) : this.add(theme,type);
         break;
       default:
         <View />;

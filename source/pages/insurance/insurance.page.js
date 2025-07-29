@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {Title} from 'react-native-paper';
 import Icons from 'react-native-vector-icons/MaterialIcons';
-
+import {BackHandler} from 'react-native';
 import InsuranceDataType from '../../components/insurance-data-type/insurance-data-type.component.js';
 
 import styles from './insurance.style';
@@ -21,6 +21,33 @@ class Insurance extends Component {
       isArchive: false,
     };
   }
+  componentDidMount() {
+    const { navigation } = this.props;
+
+    this.focusListener = navigation.addListener('focus', () => {
+      this.backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        this.handleBackPress,
+      );
+    
+    
+    });
+    
+    this.blurListener = navigation.addListener('blur', () => {
+      if (this.backHandler) this.backHandler.remove();
+    });
+    
+  }
+
+  componentWillUnmount() {
+    if (this.focusListener) this.focusListener();
+    if (this.blurListener) this.blurListener();
+    if (this.backHandler) this.backHandler.remove();
+  }
+  handleBackPress = () => {
+    this.props.navigation.goBack();
+    return true;
+  };
   render() {
     const {navigation} = this.props;
     const {isArchive} = this.state;

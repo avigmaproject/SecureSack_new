@@ -22,13 +22,14 @@ class AutoCompleteText extends Component {
   };
 
   find = (val, array) => {
-    if (val === '' || val === undefined) {
+    if (!val || typeof val !== 'string') {
       return [];
     }
     const regex = new RegExp(`${val.trim()}`, 'i');
     const arr = array.filter((array) => array.label.search(regex) >= 0);
     return arr;
   };
+  
 
   render() {
     const {

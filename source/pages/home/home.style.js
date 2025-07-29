@@ -73,15 +73,18 @@ const styles = StyleSheet.create({
   },
   grettingText: {
     fontSize: 28,
-    fontFamily: 'Montserrat-ExtraLight',
-    color:"black"
+    fontFamily: 'Montserrat',
+    fontWeight:'400',
+     color:"black"
   },
   grettingView: {
     marginTop: 18,
   },
   name: {
-    fontFamily: 'Montserrat-Bold',
-    color:"black"
+    fontFamily: 'Montserrat',
+    color:"black",
+    fontWeight:'660'
+    
   },
 });
 

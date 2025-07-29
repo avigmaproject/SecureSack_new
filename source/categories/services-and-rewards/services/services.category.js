@@ -67,6 +67,7 @@ class ServiceAccount extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList: [],
     securityQ1: '',
     securityA1: '',
     securityQ2: '',
@@ -81,7 +82,7 @@ class ServiceAccount extends Component {
     serviceType: '',
     notes: '',
     creditCardArray: [],
-    editable: true,
+    editable: false,
     refArray: [],
     showQuestion: false,
     changes: false,
@@ -99,25 +100,48 @@ class ServiceAccount extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
-
+    const {navigation} = this.props;
+  
+    // ✅ Handle Android back button
+ 
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('ServiceRewards');
+        return true;
+      }
+    );
+    // ✅ Run actions when screen is focused
     navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-      // if(this.userInfo)
-        this.setState(
-          {
-            // access_token: this.props.userData.userData.access_token,
-            access_token:this.userInfo?.access_token
-          },
-          () => this.viewRecord(),
-          this.getBusinessEntity(),
-          this.getCreditCard(),
-          this.getUserInfo()
-        );
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getBusinessEntity();
+          this.getCreditCard();
+          this.getUserInfo();
+          this.loadCountries();
+        }
+      );
     });
   }
+  
+
+   loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
+  
+  
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -131,12 +155,15 @@ class ServiceAccount extends Component {
     }
   };
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress);
+    if (this.focusListener) this.focusListener();
+    if (this.blurListener) this.blurListener();
+    if (this.backHandler) this.backHandler.remove();
   }
   refreshData = () => {
     this.viewRecord();
   };
   viewRecord = async () => {
+    console.log("editableeeeee",this.state.editable)
     console.log("click here")
     const information = await AsyncStorage.getItem('user_info');
     if (information) {
@@ -348,7 +375,8 @@ class ServiceAccount extends Component {
     await createOrUpdateRecord('ServiceAccount', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('ServiceRewards');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -381,7 +409,7 @@ class ServiceAccount extends Component {
       this.userInfo?.access_token
     )
     console.log("recid",recid)
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('ServiceRewards'))
       .catch((error) => {
         console.log('Error in delete', error);
         // navigation.reset({
@@ -407,7 +435,8 @@ class ServiceAccount extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('ServiceRewards');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -474,14 +503,14 @@ class ServiceAccount extends Component {
           placeholder="Provider"
           onChangeText={(provider) =>
             this.setState(
-              {provider, providerClicked: !provider ? true : false},
+              {provider, providerClicked: !provider ? false : true},
               () => this.changesMade(),
             )
           }
           keyboardType="default"
           value={this.state.provider}
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(provider) => this.showAutoComplete(provider)}
           clicked={this.state.providerClicked}
@@ -505,8 +534,8 @@ class ServiceAccount extends Component {
             )
           }
           color={Color.veryLightBlue}
-          // editable={this.state.editable}
-          editable={false}
+           editable={!this.state.editable}
+         
           name="Type"
         />
       </View>
@@ -556,7 +585,7 @@ class ServiceAccount extends Component {
           keyboardType="number-pad"
           color={Color.veryLightBlue}
           value={this.state.installment}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -577,8 +606,8 @@ class ServiceAccount extends Component {
             )
           }
           color={Color.veryLightBlue}
-          // editable={this.state.editable}
-          editable={false}
+          editable={!this.state.editable}
+         
           name="Due"
         />
       </View>
@@ -620,7 +649,7 @@ class ServiceAccount extends Component {
           keyboardType="number-pad"
           color={Color.veryLightBlue}
           value={this.state.total}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
     </View>
@@ -688,21 +717,19 @@ class ServiceAccount extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
-          onPress={() =>
-            this.setState(
-              {
-                modal: true,
-                array: this.props.country.country,
-                key: 'country',
-              },
-              () => this.changesMade(),
-            )
-          }
+           label={this.state.country || 'Country'}
+           onPress={() =>
+             this.setState(
+               {
+                 modal: true,
+                 array: this.state.countriesList,
+                 key: 'country',
+               },
+               () => this.changesMade(),
+             )
+           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -849,8 +876,8 @@ class ServiceAccount extends Component {
               )
             }
             color={Color.veryLightBlue}
-            // editable={this.state.editable}
-            editable={false}
+            editable={!this.state.editable}
+         
             name="Is Credit Card Provided?"
           />
         </View>
@@ -863,8 +890,8 @@ class ServiceAccount extends Component {
             }
             onPress={() => this.filterCardArray()}
             color={Color.veryLightBlue}
-            // editable={this.state.editable}
-            editable={false}
+            editable={!this.state.editable}
+           
             name="Credit Card On Record"
           />
         </View>
@@ -985,10 +1012,12 @@ class ServiceAccount extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({ editable: false });
+
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -1021,13 +1050,14 @@ class ServiceAccount extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>this.props.navigation.navigate('ServiceRewards'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('ServiceRewards');
     }
     return true;
   };

@@ -63,7 +63,7 @@ class RewardProgram extends Component {
     securityA3: '',
     programType: '',
     notes: '',
-    editable: true,
+    editable: false,
     refArray: [],
     showQuestion: false,
     changes: false,
@@ -80,7 +80,7 @@ class RewardProgram extends Component {
   userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
+    // BackHandler.addEventListener('hardwareBackPress', this.onBack);
 
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
@@ -265,7 +265,8 @@ class RewardProgram extends Component {
     await createOrUpdateRecord('RewardProgram', recid, data,this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('ServiceRewards');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -290,7 +291,7 @@ class RewardProgram extends Component {
       recid,
       this.userInfo?.access_token,
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>this.props.navigation.navigate('ServiceRewards'))
       .catch((error) => {
         console.log('Error in delete', error);
         navigation.reset({
@@ -322,7 +323,8 @@ class RewardProgram extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('ServiceRewards');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -359,7 +361,7 @@ class RewardProgram extends Component {
           keyboardType="default"
           value={this.state.issuer}
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuer) => this.showAutoComplete(issuer)}
           clicked={this.state.issuerClicked}
@@ -413,8 +415,8 @@ class RewardProgram extends Component {
             )
           }
           color={Color.veryLightBlue}
-          // editable={this.state.editable}
-          editable={false}
+          editable={!this.state.editable}
+          // editable={false}
           name="Type"
         />
       </View>
@@ -550,7 +552,7 @@ class RewardProgram extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -644,10 +646,11 @@ class RewardProgram extends Component {
   );
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -680,13 +683,14 @@ class RewardProgram extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('ServiceRewards'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('ServiceRewards');
     }
     return true;
   };

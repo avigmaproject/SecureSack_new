@@ -39,11 +39,14 @@ class BlockFile extends Component {
   );
 
   render() {
-    const {item, onInfo, onDelete, onEdit, onDownload} = this.props;
+    const {item, onInfo, onDelete, onEdit, onDownload,index} = this.props;
     console.log('Items: ', this.state.showMenu);
+    console.log("indexxx",index)
     return (
       <View style={styles.container}>
-        <View style={styles.fileContainer}>
+        {/* <View style={styles.fileContainer}> */}
+        <View style={[styles.fileContainer, { backgroundColor: index % 2 === 0 ? '#FFFFFF' : 'rgba(33, 47, 60, 0.1)' }]}>
+
           <View style={styles.icon}>
             {this.popUpMenu(onInfo, onDelete, onEdit, onDownload, item)}
           </View>
@@ -51,7 +54,10 @@ class BlockFile extends Component {
             <TouchableOpacity onPress={onDownload}>
               <Icons name="insert-drive-file" color="#FB9337" size={40} />
             </TouchableOpacity>
-            <Text style={styles.fileName}>{item.item.name}</Text>
+            <Text style={styles.fileName}>
+  {item.name}
+</Text>
+
           </View>
         </View>
       </View>

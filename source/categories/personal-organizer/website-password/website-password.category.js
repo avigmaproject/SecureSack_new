@@ -36,7 +36,7 @@ import styles from './website-password.style';
 class WebSiteAccount extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     showQuestion: false,
     access_token: '',
     name: '',
@@ -62,24 +62,38 @@ class WebSiteAccount extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
-
-    navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-        this.setState(
-          {
-            access_token:this.userInfo?.access_token
-          },
-          () => this.viewRecord(),
-          this.getUserInfo()
-        );
+    const {navigation} = this.props;
+  
+    // Handle Android back press
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('PersonalOrganisation');
+        return true;
+      }
+    );
+  
+    // Animate when screen is focused
+    this.focusListener = navigation.addListener('focus', () => {
+      
+  
+      // Load data
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getUserInfo();
+         
+        }
+      );
     });
   }
+ 
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', handler);
+    if (this.backHandler) this.backHandler.remove();
 }
 getUserInfo = async () => {
   try {
@@ -204,7 +218,8 @@ getUserInfo = async () => {
     await createOrUpdateRecord('WebSiteAccount', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalOrganisation');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -230,7 +245,7 @@ getUserInfo = async () => {
       // this.props.userData.userData.access_token,
       this.userInfo.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('PersonalOrganisation'))
       .catch((error) => {console.log('Error in delete', error)
       navigation.reset({
           index: 0,
@@ -262,7 +277,8 @@ getUserInfo = async () => {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalOrganisation');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -419,7 +435,7 @@ getUserInfo = async () => {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -471,10 +487,11 @@ getUserInfo = async () => {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -507,13 +524,14 @@ getUserInfo = async () => {
       'Do you want to save changes ?',
       [
         {text: 'Save', onPress: () => this.submit()},
-        {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+        {text: 'Cancel', onPress: () => this.props.navigation.navigate('PersonalOrganisation'), style: 'cancel'},
       ],
       {cancelable: false},
       //clicking out side of alert will not cancel
     );
     }else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('PersonalOrganisation');
     }
     return true
   }

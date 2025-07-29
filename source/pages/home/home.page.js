@@ -38,6 +38,7 @@ class Home extends Component {
       enable_fingerprint: false,
       showPopup: true,
       access_token: '',
+      info:null
     };
   }
 
@@ -46,6 +47,7 @@ class Home extends Component {
     console.log("userdata",userData)
     const {navigation, route} = this.props;
     console.log('Route: ', route.params);
+    this.getUserInfo();
     navigation.addListener('focus', () => {
       this.getUserInfo();
     });
@@ -95,28 +97,22 @@ class Home extends Component {
     let arr = [];
     data.map((country) => arr.push(country.label));
     countries(arr);
+    AsyncStorage.setItem('countries', JSON.stringify(arr))
   };
 
   getUserInfo = async () => {
-    const {userInfo} = this.props;
-   console.log("userinfo",userInfo)
     try {
-      let information = await AsyncStorage.getItem('user_info');
-      console.log('Check user info: ',information);
+      const information = await AsyncStorage.getItem('user_info');
       if (information !== null) {
-        let info = JSON.parse(information);
-        userInfo(info);
-        this.setState({access_token: info.access_token}, () =>
-          this.getCountry(),
-        );
-        console.log('Access Token: ', info.access_token);
-      } else {
-        console.log('HI');
+        const info = JSON.parse(information);
+        this.setState({ info, access_token: info.access_token });
+        this.getCountry()
       }
     } catch (error) {
-      console.log('Error in getting user info: ', error);
+      console.log('Error in getting user info:', error);
     }
   };
+  
 
   // detectFingerprintAvailable = () => {
   //   const {showPopup} = this.state;
@@ -250,10 +246,11 @@ class Home extends Component {
   render() {
     const {isFingerPrintSettings, isSensorAvailable, access_token} = this.state;
     const {navigation, userData} = this.props;
-    let name = '';
-    if (userData && userData.userData) {
-      name = userData.userData.fullname;
-    }
+    const { info } = this.state;
+  const name = info?.fullname ?? '';
+
+   
+    console.log("info===",this.state.info?.fullname )
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView

@@ -61,12 +61,13 @@ class ConsumerLoan extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList:'',
     effectiveFrom: '',
     endsOn: '',
     refiance: '',
     access_token: '',
     notes: '',
-    editable: true,
+    editable: false,
     hideResult: true,
     refArray: [],
     changes: false,
@@ -83,7 +84,11 @@ class ConsumerLoan extends Component {
   userInfo = null;
   componentDidMount() {
     const {navigation} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.navigation.navigate('FinancialData');
+      return true; // prevent default back behavior
+    });
+    
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
       // if (this.props.userData && this.props.userData.userData)
@@ -91,7 +96,8 @@ class ConsumerLoan extends Component {
           {access_token: this.userInfo?.access_token},
           () => this.viewRecord(),
           this.getBusinessEntity(),
-          this.getUserInfo()
+          this.getUserInfo(),
+          this.loadCountries()
         );
     });
   }
@@ -106,6 +112,17 @@ class ConsumerLoan extends Component {
       }
     } catch (error) {
       console.log('Error fetching user info:', error);
+    }
+  };
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
     }
   };
   componentWillUnmount() {
@@ -237,7 +254,8 @@ class ConsumerLoan extends Component {
     await createOrUpdateRecord('ConsumerLoan', recid, data,  this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -262,7 +280,7 @@ class ConsumerLoan extends Component {
       recid,
       this.userInfo?.access_token,
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('FinancialData'))
       .catch((error) => {
         console.log('Error in delete', error);
         // navigation.reset({
@@ -287,7 +305,8 @@ class ConsumerLoan extends Component {
     )
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -341,7 +360,7 @@ class ConsumerLoan extends Component {
           keyboardType="default"
           color={Color.lightishBlue}
           value={this.state.issuer}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           hideResult={this.state.hideResult}
           onPress={(issuer) => this.showAutoComplete(issuer)}
@@ -357,7 +376,7 @@ class ConsumerLoan extends Component {
           }
           color={Color.lightishBlue}
           value={this.state.loanAmnt}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           keyboardType="number-pad"
         />
       </View>
@@ -371,7 +390,7 @@ class ConsumerLoan extends Component {
           keyboardType="default"
           color={Color.lightishBlue}
           value={this.state.interestRate}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -488,20 +507,18 @@ class ConsumerLoan extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
-          onPress={() =>
-            this.setState(
-              {
-                modal: true,
-                array: this.props.country.country,
-                key: 'country',
-              },
-              () => this.changesMade(),
-            )
-          }
-          editable={this.state.editable}
+           label={this.state.country || 'Country'}
+           onPress={() =>
+             this.setState(
+               {
+                 modal: true,
+                 array: this.state.countriesList,
+                 key: 'country',
+               },
+               () => this.changesMade(),
+             )
+           }
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -525,8 +542,8 @@ class ConsumerLoan extends Component {
               () => this.changesMade(),
             )
           }
-          // editable={this.state.editable}
-          editable={false}
+          editable={!this.state.editable}
+          // editable={false}
           name="Refiance"
         />
       </View>
@@ -568,7 +585,7 @@ class ConsumerLoan extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -672,10 +689,11 @@ class ConsumerLoan extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false});
   };
 
   onEdit = () => {
-    this.setState({editable: false});
+    this.setState({editable: true});
   };
 
   onDelete = () => {
@@ -708,13 +726,14 @@ class ConsumerLoan extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('FinancialData'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('FinancialData');
     }
     return true;
   };

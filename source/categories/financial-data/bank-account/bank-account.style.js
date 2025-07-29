@@ -21,6 +21,7 @@ const styles = {
   },
   miniInputContainer: {
     flex: 1,
+  
   },
   gap: {
     marginTop: 50,

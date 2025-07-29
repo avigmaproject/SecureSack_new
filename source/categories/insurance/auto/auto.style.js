@@ -3,7 +3,7 @@ import {StyleSheet, StatusBar} from 'react-native';
 const styles = {
   container: {
     padding: 15,
-    paddingTop: 30,
+  
   },
   title: {
     fontFamily: 'Montserrat-Regular',

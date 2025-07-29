@@ -6,6 +6,7 @@ import {
   ImageBackground,
   ScrollView,
   TouchableOpacity,
+  Animated, Easing,
 } from 'react-native';
 import {Title} from 'react-native-paper';
 import Icons from 'react-native-vector-icons/MaterialIcons';
@@ -13,14 +14,50 @@ import Icons from 'react-native-vector-icons/MaterialIcons';
 import FinancialDataType from '../../components/financial-data-type/financial-data-type.component';
 
 import styles from './financial-data.style';
-
+import {BackHandler} from 'react-native';
 class FinancialData extends Component {
   constructor() {
     super();
     this.state = {
       isArchive: false,
+      slideAnim: new Animated.Value(1500), 
     };
   }
+  componentDidMount() {
+    const { navigation } = this.props;
+
+    this.focusListener = navigation.addListener('focus', () => {
+      this.backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        this.handleBackPress,
+      );
+    
+      this.state.slideAnim.setValue(500);
+      Animated.timing(this.state.slideAnim, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+    });
+    
+    this.blurListener = navigation.addListener('blur', () => {
+      if (this.backHandler) this.backHandler.remove();
+    });
+    
+  }
+  
+  componentWillUnmount() {
+    if (this.focusListener) this.focusListener();
+    if (this.blurListener) this.blurListener();
+    if (this.backHandler) this.backHandler.remove();
+     }
+  
+
+  handleBackPress = () => {
+    this.props.navigation.goBack();
+    return true;
+  };
   render() {
     const {navigation} = this.props;
     const {isArchive} = this.state;
@@ -42,9 +79,12 @@ class FinancialData extends Component {
               </View>
             </View>
           </View>
-          <ScrollView style={styles.outerContainerView}>
+          <Animated.ScrollView style={[
+    styles.outerContainerView,
+    { transform: [{ translateY: this.state.slideAnim }] },
+  ]}>
             <FinancialDataType navigation={navigation} archive={isArchive}/>
-          </ScrollView>
+          </Animated.ScrollView>
         </ImageBackground>
       </SafeAreaView>
     );

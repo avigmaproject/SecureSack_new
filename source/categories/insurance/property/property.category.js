@@ -42,7 +42,7 @@ import styles from './property.style';
 class PropertyInsurance extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     refBusModal: false,
     array: [],
     refArray: [],
@@ -90,13 +90,13 @@ class PropertyInsurance extends Component {
   userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
+    // BackHandler.addEventListener('hardwareBackPress', () => this.navigation.goback());
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
       // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            access_token: this.userInfo.access_token,
+            access_token: this.userInfo?.access_token,
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
@@ -130,7 +130,7 @@ class PropertyInsurance extends Component {
       }
     // const {userData} = this.props;
     // if (userData !== null) {
-      await lookupType(this.userInfo.access_token, 'Property')
+      await lookupType(this.userInfo?.access_token, 'Property')
         .then((response) => {
           console.log('Response credit card: ', response);
           this.setState({ownedPropertyArr: response});
@@ -168,7 +168,7 @@ class PropertyInsurance extends Component {
       'PropertyInsurance',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token
+      this.userInfo?.access_token
     )
       .then((response) => {
         console.log('View res: ', response);
@@ -243,7 +243,7 @@ class PropertyInsurance extends Component {
       }
     // const {userData} = this.props;
     // if (userData !== null) {
-      await lookupType(this.userInfo.access_token, 'RefBusinessEntity')
+      await lookupType(this.userInfo?.access_token, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
           this.setState({refArray: response});
@@ -323,10 +323,11 @@ class PropertyInsurance extends Component {
       Note: notes,
     });
 
-    await createOrUpdateRecord('PropertyInsurance', recid, data, this.userInfo.access_token)
+    await createOrUpdateRecord('PropertyInsurance', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -346,9 +347,9 @@ class PropertyInsurance extends Component {
       'PropertyInsurance',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token
+      this.userInfo?.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>     this.props.navigation.navigate('Insurance'))
       .catch((error) => console.log('Error in delete', error));
   };
 
@@ -369,13 +370,14 @@ class PropertyInsurance extends Component {
       'PropertyInsurance',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token,
+      this.userInfo?.access_token,
       data,
     )
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -438,7 +440,7 @@ class PropertyInsurance extends Component {
           keyboardType="default"
           value={this.state.issuer}
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuer) => this.showAutoComplete(issuer)}
           clicked={this.state.issuerClicked}
@@ -475,7 +477,7 @@ class PropertyInsurance extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Escrow Account"
           />
         </View>
@@ -583,7 +585,7 @@ class PropertyInsurance extends Component {
             }
             onPress={() => this.filterOwnedProperty()}
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Owned Property"
           />
         </View>
@@ -617,7 +619,7 @@ class PropertyInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.dwellingCoverage}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -628,7 +630,7 @@ class PropertyInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.liabilityCoverage}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -639,7 +641,7 @@ class PropertyInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.medicalPayment}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -652,7 +654,7 @@ class PropertyInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.dwellingCoverageDeductoble}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -663,7 +665,7 @@ class PropertyInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.lossOfCoverage}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.miniContainer}>
@@ -685,7 +687,7 @@ class PropertyInsurance extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Replacement of Contents Coverage"
           />
         </View>
@@ -707,7 +709,7 @@ class PropertyInsurance extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Loss Assessment Coverage"
           />
         </View>
@@ -731,7 +733,7 @@ class PropertyInsurance extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Sewer Backup Coverage"
           />
         </View>
@@ -743,7 +745,7 @@ class PropertyInsurance extends Component {
             }
             color={Color.veryLightPink}
             value={this.state.ordianceCoverage}
-            editable={this.state.editable}
+            editable={!this.state.editable}
           />
         </View>
       </View>
@@ -755,7 +757,7 @@ class PropertyInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.personalItemInsured}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
     </View>
@@ -880,7 +882,7 @@ class PropertyInsurance extends Component {
         isModalVisible={this.state.refBusModal}
         changeModalVisibility={this.changeRefBusinessmModal}
         // access_token={this.props.userData.userData.access_token}
-        access_token={this.userInfo.access_token}
+        access_token={this.userInfo?.access_token}
         refreshingList={this.refreshingList}
       />
     </View>
@@ -888,10 +890,11 @@ class PropertyInsurance extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -924,13 +927,14 @@ class PropertyInsurance extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>  this.props.navigation.navigate('Insurance'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('Insurance');
     }
     return true;
   };

@@ -61,7 +61,7 @@ class BrokerageAccount extends Component {
     closedOn: '',
     notes: '',
     showQuestion: false,
-    editable: true,
+    editable: false,
     hideResult: true,
     refArray: [],
     changes: false,
@@ -78,7 +78,7 @@ class BrokerageAccount extends Component {
   componentDidMount() {
     const {navigation} = this.props;
     navigation.addListener('focus', () => {
-      BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
+      BackHandler.addEventListener('hardwareBackPress', () => this.props.navigation.navigate('FinancialData'));
       this.setState(this.initialState);
       // if (this.props.userData && this.props.userData.userData)
         this.setState(
@@ -175,6 +175,7 @@ class BrokerageAccount extends Component {
 
   referenceObj = () => {
     const {refArray} = this.state;
+    console.log("refArray",refArray)
     refArray
       .filter((item) => item.id === this.state.financialInstitutionId)
       .map((val) => this.setState({financialInstitution: val.label}));
@@ -249,7 +250,8 @@ class BrokerageAccount extends Component {
     await createOrUpdateRecord('BrokerageAccount', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -274,7 +276,7 @@ class BrokerageAccount extends Component {
       recid,
       this.userInfo?.access_token,
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>this.props.navigation.navigate('FinancialData'))
       .catch((error) => {
         console.log('Error in delete', error);
         navigation.reset({
@@ -305,7 +307,8 @@ class BrokerageAccount extends Component {
     )
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -331,28 +334,29 @@ class BrokerageAccount extends Component {
         />
       </View>
       <View style={[styles.inputContainer, {zIndex: 1000}]}>
-        <AutoCompleteText
-          placeholder="Financial Institution"
-          onChangeText={(financialInstitution) =>
-            this.setState(
-              {
-                financialInstitution,
-                financialInstitution: !financialInstitution ? true : false,
-              },
-              () => this.changesMade(),
-            )
-          }
-          keyboardType="default"
-          color={Color.lightishBlue}
-          value={this.state.financialInstitution}
-          editable={this.state.editable}
-          array={this.state.refArray}
-          hideResult={this.state.hideResult}
-          onPress={(financialInstitution) =>
-            this.showAutoComplete(financialInstitution)
-          }
-          clicked={this.state.financialInstitution}
-        />
+      <AutoCompleteText
+  placeholder="Financial Institution"
+  onChangeText={(financialInstitution) =>
+    this.setState(
+      {
+        financialInstitution,
+        isFinancialInstitutionEmpty: !financialInstitution,
+      },
+      () => this.changesMade(),
+    )
+  }
+  keyboardType="default"
+  color={Color.lightishBlue}
+  value={this.state.financialInstitution}
+  editable={!this.state.editable}
+  array={this.state.refArray}
+  hideResult={this.state.hideResult}
+  onPress={(financialInstitution) =>
+    this.showAutoComplete(financialInstitution)
+  }
+  clicked={this.state.financialInstitution}
+/>
+
       </View>
       <View style={styles.inputContainer}>
         <InputTextDynamic
@@ -567,7 +571,7 @@ class BrokerageAccount extends Component {
           keyboardType="number-pad"
           color={Color.lightishBlue}
           value={this.state.stockTransactionFee}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.miniContainer}>
@@ -608,7 +612,7 @@ class BrokerageAccount extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -703,10 +707,11 @@ class BrokerageAccount extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false});
   };
 
   onEdit = () => {
-    this.setState({editable: false});
+    this.setState({editable: true});
   };
 
   onArchive = () => {
@@ -724,13 +729,14 @@ class BrokerageAccount extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('FinancialData'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('FinancialData');
     }
     return true;
   };

@@ -25,7 +25,7 @@ class PersonalOrganisationData extends Component {
       ...this.initialState
     };
   }
-
+  userInfo = null;
   componentDidMount() {
     const {navigation} = this.props;
     navigation.addListener('focus', () => {
@@ -34,7 +34,7 @@ class PersonalOrganisationData extends Component {
       this.getUserInfo()
     });
   }
-  userInfo = null;
+ 
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -76,7 +76,7 @@ class PersonalOrganisationData extends Component {
         },
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization: 'Bearer ' + this.userInfo.access_token,
+          Authorization: 'Bearer ' + this.userInfo?.access_token,
         },
       };
       await axios(config)
@@ -119,9 +119,9 @@ class PersonalOrganisationData extends Component {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={category === undefined ? category : category.slice(0, show ? category.length : 3)}
+          data={category === undefined ? category : category.slice(0, show ? category.length : 2)}
           renderItem={({item}) => this.renderTitleSubtitle(item, type, title)}
-          maxToRenderPerBatch={show ? category.length : 3}
+          maxToRenderPerBatch={show ? category.length : 2}
         />
         {category === undefined ? <View /> : this.viewAll(category, show, index)}
       </View>
@@ -131,7 +131,7 @@ class PersonalOrganisationData extends Component {
     viewAll = (category, show, index) => {
     console.log("Index: ", category.length)
     if (category !== undefined) {
-      if (category.length > 3) return this.viewAllComponent(show, index);
+      if (category.length > 2) return this.viewAllComponent(show, index);
     }
   };
 

@@ -5,8 +5,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     justifyContent: 'center',
-    marginTop: 13,
-  },
+    marginTop: 5},
   label: {
     fontSize: 15,
     fontFamily: 'Montserrat-Regular',

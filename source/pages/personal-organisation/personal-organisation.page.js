@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {Title} from 'react-native-paper';
 import Icons from 'react-native-vector-icons/MaterialIcons';
-
+import {BackHandler} from 'react-native';
 import PersonalOrganisationData from '../../components/personal-organisation-data-type/personal-organisation-data-type.component.js';
 
 import styles from './personal-organisation.style';
@@ -21,6 +21,34 @@ class PersonalOrganisation extends Component {
       isArchive: false,
     };
   }
+  componentDidMount() {
+    const { navigation } = this.props;
+
+    this.focusListener = navigation.addListener('focus', () => {
+      this.backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        this.handleBackPress,
+      );
+    
+    
+    });
+    
+    this.blurListener = navigation.addListener('blur', () => {
+      if (this.backHandler) this.backHandler.remove();
+    });
+    
+  }
+
+  componentWillUnmount() {
+    if (this.focusListener) this.focusListener();
+    if (this.blurListener) this.blurListener();
+    if (this.backHandler) this.backHandler.remove();
+  }
+
+  handleBackPress = () => {
+    this.props.navigation.goBack();
+    return true;
+  };
   render() {
     const {navigation} = this.props;
     const {isArchive} = this.state;

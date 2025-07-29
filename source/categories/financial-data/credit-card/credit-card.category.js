@@ -73,10 +73,11 @@ class CreditCard extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList: [],
     notes: '',
     creditCardType: '',
     access_token: '',
-    editable: true,
+    editable: false,
     issuer: '',
     issuerId: '',
     showQuestion: false,
@@ -95,7 +96,11 @@ class CreditCard extends Component {
   userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.navigation.navigate('FinancialData');
+      return true; // prevent default back behavior
+    });
+    
     this.viewRecord()
   
     this.getUserInfo(); // ✅ Call the async method here
@@ -110,11 +115,22 @@ class CreditCard extends Component {
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
-          this.getUserInfo()
+          this.getUserInfo(),
+          this.loadCountries()
         );
     });
   }
-
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
   componentWillUnmount() {
     if (this.state.editable)
       BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
@@ -299,7 +315,8 @@ class CreditCard extends Component {
     await createOrUpdateRecord('CreditCard', recid, data,  this.userInfo?.access_token,)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -324,7 +341,7 @@ class CreditCard extends Component {
       recid,
       this.userInfo?.access_token,
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('FinancialData'))
       .catch((error) => {
         console.log('Error in delete', error);
         navigation.reset({
@@ -356,7 +373,8 @@ class CreditCard extends Component {
       .then((response) => {
         console.log('Response: ', response);
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         console.log('Error Response: ', error);
@@ -411,8 +429,8 @@ class CreditCard extends Component {
               () => this.changesMade(),
             )
           }
-          // editable={this.state.editable}
-          editable={false}
+          editable={!this.state.editable}
+       
           name="Type"
         />
       </View>
@@ -477,7 +495,7 @@ class CreditCard extends Component {
           keyboardType="default"
           value={this.state.issuer}
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuer) => this.showAutoComplete(issuer)}
           clicked={this.state.issuerClicked}
@@ -759,20 +777,18 @@ class CreditCard extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
+          label={this.state.country || 'Country'}
           onPress={() =>
             this.setState(
               {
                 modal: true,
-                array: this.props.country.country,
+                array: this.state.countriesList,
                 key: 'country',
               },
               () => this.changesMade(),
             )
           }
-          editable={this.state.editable}
+          editable={!this.state.editable}
           nam="Country"
         />
       </View>
@@ -931,10 +947,12 @@ class CreditCard extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({ editable: false });
+
   };
 
   onEdit = () => {
-    this.setState({editable: false});
+    this.setState({editable: true});
   };
 
   onDelete = () => {
@@ -968,13 +986,14 @@ class CreditCard extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('FinancialData'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('FinancialData');
     }
     return true;
   };

@@ -100,9 +100,20 @@ onDelete = async (item) => {
       <View style={styles.container}>
         <FlatList
           data={fileList}
-          numColumns={2}
-          renderItem={(item, id) => <BlockFile item={item} onInfo={this.onInfo} onDelete={this.onDelete} onEdit={this.onEdit} onDownload={this.onDownload}/>}
-        />
+        
+          contentContainerStyle={{ paddingBottom: 150 }}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <BlockFile
+              item={item}
+              index={index}
+              onInfo={this.onInfo}
+              onDelete={this.onDelete}
+              onEdit={this.onEdit}
+              onDownload={this.onDownload}
+            />
+          )}
+            />
         <Loader isLoader={this.state.isLoader} />
       </View>
     );

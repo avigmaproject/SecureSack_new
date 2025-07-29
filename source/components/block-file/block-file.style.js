@@ -6,19 +6,24 @@ const height = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   fileContainer: {
     flex: 1,
+  
     justifyContent: 'center',
-    alignItems: 'center',
+    // alignItems: 'center',
   },
   fileInnerContainer: {
     borderRadius: 9,
-    backgroundColor: 'rgba(33, 47, 60, 0.1)',
+     flexDirection:'row',
+    // backgroundColor: 'rgba(33, 47, 60, 0.1)',
     width: width / 2.5,
-    height: height / 4.5,
+    height: height / 8.5,
+marginLeft:20,marginRight:20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   container: {
-    padding: 10,
+    // padding: 10,
+     flexDirection:'row',
+     marginLeft:10,marginRight:10,
   },
   icon: {
     position: 'absolute',
@@ -30,7 +35,7 @@ const styles = StyleSheet.create({
   fileName: {
     fontFamily: 'Montserrat-Regular',
     fontSize: 12,
-    textAlign: 'center',
+    // textAlign: 'center',
     margin: 5,
     color:"black"
   },

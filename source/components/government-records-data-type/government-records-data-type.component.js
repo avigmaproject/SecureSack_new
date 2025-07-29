@@ -79,10 +79,10 @@ class GovernmentRecordsData extends Component {
         })
         .catch((error) => {
           console.log('Bank account error: ', error);
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Login'}],
-          });
+          // navigation.reset({
+          //   index: 0,
+          //   routes: [{name: 'Login'}],
+          // });
         });
     }
   };
@@ -112,9 +112,9 @@ class GovernmentRecordsData extends Component {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={category === undefined ? category : category.slice(0, show ? category.length : 3)}
+          data={category === undefined ? category : category.slice(0, show ? category.length : 2)}
           renderItem={({item}) => this.renderTitleSubtitle(item, type, title)}
-          maxToRenderPerBatch={show ? category.length : 3}
+          maxToRenderPerBatch={show ? category.length : 2}
         />
         {this.viewAll(category, index, show)}
       </View>
@@ -123,7 +123,7 @@ class GovernmentRecordsData extends Component {
 
   viewAll = (category, index, show) => {
     if (category !== undefined) {
-      if (category.length > 3)
+      if (category.length > 2)
         return this.viewAllComponent(index, show);
     }
   };
@@ -154,8 +154,9 @@ class GovernmentRecordsData extends Component {
 
   navigation = (type, title, recid, mode) => {
     const {navigation, userData} = this.props;
+    const {userInfo} = this.state;
     // if (userData.userData.showUpgrade && mode === "Add") {
-      if (this.userInfo?.showPaymentRequired && mode === "Add") {
+      if (userInfo?.showPaymentRequired && mode === "Add") {
       Alert.alert(
       //title
       'Important',

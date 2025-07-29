@@ -127,6 +127,7 @@ console.log('Access Token:', accessToken);
   };
 
   renderTitleSubtitle = (item, type, title) => {
+    console.log("item",item)
     return (
       <TouchableRipple
         rippleColor="rgba(0, 0, 0, .32)"
@@ -189,10 +190,11 @@ console.log('Access Token:', accessToken);
           data={
             category === undefined
               ? category
-              : category.slice(0, show ? category.length : 3)
+              : category.slice(0, show ? category.length : 2)
           }
           renderItem={({item}) => this.renderTitleSubtitle(item, type, title)}
           keyExtractor={(item, index) => index.toString()}
+          maxToRenderPerBatch={show ? category.length : 2}
         />
         {this.viewAll(category, show, index)}
       </View>
@@ -200,7 +202,7 @@ console.log('Access Token:', accessToken);
   };
 
   viewAll = (category, show, index) => {
-    if (category !== undefined && category.length > 3) {
+    if (category !== undefined && category.length > 2) {
       return this.viewAllComponent(category, show, index);
     }
   };

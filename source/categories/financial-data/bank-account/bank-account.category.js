@@ -9,6 +9,8 @@ import {
   BackHandler,
 } from 'react-native';
 import {Text} from 'react-native-paper';
+import {Animated, Easing} from 'react-native';
+
 import qs from 'qs';
 import {connect} from 'react-redux';
 import {NativeBaseProvider} from 'native-base';
@@ -93,6 +95,7 @@ class BankAccounts extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList: [],
     accountType: '',
     size1: '',
     size2: '',
@@ -102,7 +105,7 @@ class BankAccounts extends Component {
     access_token: '',
     notes: '',
     showQuestion: false,
-    editable: true,
+    editable: false,
     hideResult: true,
     refArray: [],
     changes: false,
@@ -113,32 +116,61 @@ class BankAccounts extends Component {
     super(props);
     this.state = {
       ...this.initialState,
+      slideAnim: new Animated.Value(1500), 
     };
+  
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
-    
+    const {navigation} = this.props;
   
-    // this.getUserInfo(); // ✅ Call the async method here
+    // Handle Android back press
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('FinancialData');
+        return true;
+      }
+    );
   
-    navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-      // if (this.userInfo && this.userInfo)
-        this.setState(
-          {
-          //  access_token: this.props.userData.userData.access_token,
-          access_token: this.userinfo?.access_token
-          },
-          () => this.viewRecord(),
-          this.getBusinessEntity(),
-          this.getUserInfo()
-        );
+    // Animate when screen is focused
+    this.focusListener = navigation.addListener('focus', () => {
+      // Reset animation start value
+      this.state.slideAnim.setValue(500); // Slide in from right
+  
+      Animated.timing(this.state.slideAnim, {
+        toValue: 0,
+        duration: 500,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: true,
+      }).start();
+  
+      // Load data
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getBusinessEntity();
+          this.getUserInfo();
+          this.loadCountries();
+        }
+      );
     });
   }
   
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -153,9 +185,9 @@ class BankAccounts extends Component {
   };
   
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.backHandler);
-
+    if (this.backHandler) this.backHandler.remove();
   }
+  
 
   viewRecord = async () => {
     const information = await AsyncStorage.getItem('user_info');
@@ -190,6 +222,7 @@ class BankAccounts extends Component {
         });
       });
     this.setState({isLoader: false});
+  
     if (mode === 'Add') this.setState({editable: true, hideResult: false});
   };
 
@@ -303,7 +336,6 @@ class BankAccounts extends Component {
           value={this.state.name}
           color={Color.lightishBlue}
           editable={this.state.editable}
-        
         />
       </View>
       <View style={[styles.inputContainer, {zIndex: 1000}]}>
@@ -318,7 +350,7 @@ class BankAccounts extends Component {
           keyboardType="default"
           value={this.state.issuingBank}
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuingBank) => this.showAutoComplete(issuingBank)}
           clicked={this.state.issuingBankClicked}
@@ -339,7 +371,7 @@ class BankAccounts extends Component {
             })
           }
           color={Color.lightishBlue}
-          editable={false}
+          editable={!this.state.editable}
           name="Account Type"
         />
       </View>
@@ -673,8 +705,8 @@ class BankAccounts extends Component {
               )
             }
             color={Color.lightishBlue}
-            // editable={this.state.editable}
-            editable={false}
+            editable={!this.state.editable}
+            // editable={false}
             name="Size"
           />
         </View>
@@ -704,8 +736,8 @@ class BankAccounts extends Component {
             icon="dollar-sign"
             keyboardType="number-pad"
             color={Color.lightishBlue}
-            // editable={this.state.editable}
-            editable={false}
+           editable={!this.state.editable}
+            // editable={false}
           />
         </View>
       </View>
@@ -727,8 +759,8 @@ class BankAccounts extends Component {
             )
           }
           color={Color.lightishBlue}
-          // editable={this.state.editable}
-          editable={false}
+          editable={!this.state.editable}
+          // editable={false}
           name="Payment Due Type"
         />
       </View>
@@ -754,8 +786,8 @@ class BankAccounts extends Component {
               )
             }
             color={Color.lightishBlue}
-            // editable={this.state.editable}
-            editable={false}
+            editable={this.state.editable}
+            // editable={false}
             name="Size"
           />
         </View>
@@ -785,8 +817,8 @@ class BankAccounts extends Component {
             icon="dollar-sign"
             keyboardType="number-pad"
             color={Color.lightishBlue}
-            // editable={this.state.editable}
-            editable={false}
+             editable={this.state.editable}
+            // editable={false}
           />
         </View>
       </View>
@@ -808,8 +840,8 @@ class BankAccounts extends Component {
             )
           }
           color={Color.lightishBlue}
-          // editable={this.state.editable}
-          editable={false}
+           editable={this.state.editable}
+      
           name="Payment Due Type"
         />
       </View>
@@ -878,21 +910,19 @@ class BankAccounts extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
+          label={this.state.country || 'Country'}
           onPress={() =>
             this.setState(
               {
                 modal: true,
-                array: this.props.country.country,
+                array: this.state.countriesList,
                 key: 'country',
               },
               () => this.changesMade(),
             )
           }
           color={Color.lightishBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -902,7 +932,7 @@ class BankAccounts extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -1034,14 +1064,15 @@ class BankAccounts extends Component {
     await createOrUpdateRecord('BankAccounts', recid, data,this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Home'}],
-        });
+        this.props.navigation.navigate('FinancialData');
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Home'}],
+        // });
       });
   };
 
@@ -1054,13 +1085,14 @@ class BankAccounts extends Component {
       // this.props.userData.userData.access_token,
       this.userInfo?.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>      this.props.navigation.navigate('FinancialData'))
       .catch((error) => {
         console.log('Error in delete', error);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
+        this.props.navigation.navigate('FinancialData');
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name: 'Login'}],
+        // });
       });
   };
 
@@ -1081,7 +1113,8 @@ class BankAccounts extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('FinancialData');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -1175,13 +1208,14 @@ class BankAccounts extends Component {
   );
 
   onSave = () => {
-    console.log("save clicked")
+ 
     this.submit();
+    this.setState({ editable: false });
   };
 
   onEdit = () => {
     console.log("hiii")
-    this.setState({editable: false, showQuestion: false}, () =>
+    this.setState({editable: true, showQuestion: false}, () =>
       console.log(this.state.editable),
     );
   };
@@ -1206,7 +1240,11 @@ class BankAccounts extends Component {
   };
 
   onBack = () => {
-    const {navigation} = this.props;
+   
+    const {navigation}
+     = this.props;
+  
+  
     const {changes} = this.state;
     if (changes) {
       Alert.alert(
@@ -1216,13 +1254,13 @@ class BankAccounts extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>    this.props.navigation.navigate('FinancialData'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      this.props.navigation.navigate('FinancialData');
       console.log('See: ');
     }
     return true;
@@ -1265,30 +1303,35 @@ class BankAccounts extends Component {
                 editable={editable}
               />
             </View>
-            <ScrollView
-              ref={(ref) => (this.scroll = ref)}
-              onContentSizeChange={() => {
-                this.scroll.scrollTo({y: 0});
-              }}
-              style={styles.outerContainerView}
-              keyboardShouldPersistTaps="handled">
-              <View style={styles.container}>
-                {this.editComponent(
-                  isLoader,
-                  modal,
-                  array,
-                  key,
-                  editable,
-                  refBusModal,
-                )}
-              </View>
-              <SwitchKey
-                type={'BankAccounts'}
-                recid={recid}
-                shareKeyId={shareKeyId}
-                refresh={this.refreshData}
-              />
-            </ScrollView>
+            <Animated.ScrollView
+  style={[
+    styles.outerContainerView,
+    { transform: [{ translateY: this.state.slideAnim }] },
+  ]}
+  ref={(ref) => (this.scroll = ref)}
+  onContentSizeChange={() => {
+    this.scroll.scrollTo({ y: 0 });
+  }}
+  keyboardShouldPersistTaps="handled"
+>
+  <View style={styles.container}>
+    {this.editComponent(
+      isLoader,
+      modal,
+      array,
+      key,
+      editable,
+      refBusModal,
+    )}
+  </View>
+  <SwitchKey
+    type={'BankAccounts'}
+    recid={recid}
+    shareKeyId={shareKeyId}
+    refresh={this.refreshData}
+  />
+</Animated.ScrollView>
+
           </ImageBackground>
         </SafeAreaView>
       </NativeBaseProvider>

@@ -36,7 +36,7 @@ import styles from './recipes.style';
 class Recipies extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     modal: false,
     array: [],
     key: '',
@@ -59,25 +59,39 @@ class Recipies extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', this.onBack);
-
-    navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-        this.setState(
-          {
-            access_token: this.userInfo.access_token,
-          },
-          () => this.viewRecord(),
-          this.getUserInfo()
-        );
+    const {navigation} = this.props;
+  
+    // Handle Android back press
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('PersonalOrganisation');
+        return true;
+      }
+    );
+  
+    // Animate when screen is focused
+    this.focusListener = navigation.addListener('focus', () => {
+      
+  
+      // Load data
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getUserInfo();
+         
+        }
+      );
     });
   }
+ 
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', handler);
-  }
+    if (this.backHandler) this.backHandler.remove();
+}
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -104,7 +118,7 @@ class Recipies extends Component {
       'Recipies',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token
+      this.userInfo?.access_token
     )
       .then((response) => {
         console.log('View res: ', response);
@@ -169,10 +183,11 @@ class Recipies extends Component {
       CuisineType: cuisine,
     });
 
-    await createOrUpdateRecord('Recipies', recid, data, this.userInfo.access_token)
+    await createOrUpdateRecord('Recipies', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalOrganisation');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -196,9 +211,9 @@ class Recipies extends Component {
       'Recipies',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token
+      this.userInfo?.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>this.props.navigation.navigate('PersonalOrganisation'))
       .catch((error) => {
         console.log('Error in delete', error);
         navigation.reset({
@@ -225,13 +240,14 @@ class Recipies extends Component {
       'Recipies',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token,
+      this.userInfo?.access_token,
       data,
     )
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalOrganisation');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -273,7 +289,7 @@ class Recipies extends Component {
             )
           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={false}
           name="Cuisine"
         />
       </View>
@@ -360,10 +376,11 @@ class Recipies extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -396,13 +413,14 @@ class Recipies extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('PersonalOrganisation'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('PersonalOrganisation');
     }
     return true;
   };

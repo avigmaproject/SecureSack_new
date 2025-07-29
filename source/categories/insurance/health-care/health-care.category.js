@@ -40,7 +40,7 @@ import styles from './health-care.style';
 class HealthCareProvider extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     access_token: '',
     modal: '',
     array: [],
@@ -69,6 +69,7 @@ class HealthCareProvider extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList:'',
     dependent1: '',
     dependent2: '',
     dependent3: '',
@@ -86,16 +87,18 @@ class HealthCareProvider extends Component {
   userInfo = null;
   componentDidMount() {
     const {navigation, route} = this.props;
+ 
     BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
     navigation.addListener('focus', () => {
       this.setState(this.initialState);
       // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            access_token: this.userInfo.access_token,
+             access_token: this.userInfo?.access_token,
           },
           () => this.viewRecord(),
-          this.userInfo()
+          this.getUserInfo(),
+          this.loadCountries()
         );
     });
   }
@@ -113,6 +116,17 @@ class HealthCareProvider extends Component {
       }
     } catch (error) {
       console.log('Error fetching user info:', error);
+    }
+  };
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
     }
   };
   viewRecord = async () => {
@@ -268,7 +282,8 @@ class HealthCareProvider extends Component {
     await createOrUpdateRecord('HealthCareProvider', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -290,7 +305,7 @@ class HealthCareProvider extends Component {
       // this.props.userData.userData.access_token,
       this.userInfo.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('Insurance'))
       .catch((error) => console.log('Error in delete', error));
   };
 
@@ -317,7 +332,8 @@ class HealthCareProvider extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -357,7 +373,7 @@ class HealthCareProvider extends Component {
             )
           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={false}
           name="Insurance Type"
         />
       </View>
@@ -377,7 +393,8 @@ class HealthCareProvider extends Component {
             )
           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={!this.state.editable}
+          // editable={false}
           name="Plan Type"
         />
       </View>
@@ -557,7 +574,7 @@ class HealthCareProvider extends Component {
             )
           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Due"
         />
       </View>
@@ -661,21 +678,19 @@ class HealthCareProvider extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
-          onPress={() =>
-            this.setState(
-              {
-                modal: true,
-                array: this.props.country.country,
-                key: 'country',
-              },
-              () => this.changesMade(),
-            )
-          }
+           label={this.state.country || 'Country'}
+           onPress={() =>
+             this.setState(
+               {
+                 modal: true,
+                 array: this.state.countriesList,
+                 key: 'country',
+               },
+               () => this.changesMade(),
+             )
+           }
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -804,10 +819,11 @@ class HealthCareProvider extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -840,13 +856,14 @@ class HealthCareProvider extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>  this.props.navigation.navigate('Insurance'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('Insurance');
     }
     return true;
   };

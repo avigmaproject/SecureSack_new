@@ -45,7 +45,7 @@ import styles from './property.style';
 class Property extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     access_token: '',
     countries: '',
     modal: '',
@@ -58,6 +58,7 @@ class Property extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList:'',
     boughtOn: '',
     houseSize: '',
     lotSize: '',
@@ -94,24 +95,51 @@ class Property extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
-    navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-        this.setState(
-          {
-            access_token: this.userInfo?.access_token,
-          },
-          () => this.viewRecord(),
-          this.getUserInfo()
-        );
+    const {navigation} = this.props;
+  
+    // Handle Android back press
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('PersonalAssets');
+        return true;
+      }
+    );
+  
+    // Animate when screen is focused
+    this.focusListener = navigation.addListener('focus', () => {
+      
+  
+      // Load data
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getUserInfo();
+          this.loadCountries()
+         
+        }
+      );
     });
   }
+ 
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', handler);
-  }
+    if (this.backHandler) this.backHandler.remove();
+}
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -283,7 +311,8 @@ class Property extends Component {
     await createOrUpdateRecord('Property', recid, data, this.userInfo.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalAssets');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -305,7 +334,7 @@ class Property extends Component {
       // this.props.userData.userData.access_token,
       this.userInfo.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('PersonalAssets'))
       .catch((error) => console.log('Error in delete', error));
   };
 
@@ -332,7 +361,8 @@ class Property extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('PersonalAssets');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -361,7 +391,7 @@ class Property extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Sprinkler Type"
           />
         </View>
@@ -383,7 +413,7 @@ class Property extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Fire Alarm Type"
           />
         </View>
@@ -407,7 +437,7 @@ class Property extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Burglar Alarm Type"
           />
         </View>
@@ -429,7 +459,7 @@ class Property extends Component {
               )
             }
             color={Color.veryLightBlue}
-            editable={this.state.editable}
+            editable={!this.state.editable}
             name="Smoke Detectors"
           />
         </View>
@@ -476,7 +506,7 @@ class Property extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Is the Fire Hydrant Within 1000 Feet?"
         />
       </View>
@@ -528,7 +558,7 @@ class Property extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Purpose"
         />
       </View>
@@ -550,7 +580,7 @@ class Property extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Residance Type"
         />
       </View>
@@ -614,21 +644,19 @@ class Property extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
-          onPress={() =>
-            this.setState(
-              {
-                modal: true,
-                array: this.props.country.country,
-                key: 'country',
-              },
-              () => this.changesMade(),
-            )
-          }
+           label={this.state.country || 'Country'}
+           onPress={() =>
+             this.setState(
+               {
+                 modal: true,
+                 array: this.state.countriesList,
+                 key: 'country',
+               },
+               () => this.changesMade(),
+             )
+           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -774,7 +802,7 @@ class Property extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Construction Type"
         />
       </View>
@@ -808,7 +836,7 @@ class Property extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Garage Type"
         />
       </View>
@@ -818,7 +846,7 @@ class Property extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -875,10 +903,11 @@ class Property extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -911,13 +940,14 @@ class Property extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () => this.props.navigation.navigate('PersonalAssets'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('PersonalAssets');
     }
     return true;
   };

@@ -42,7 +42,7 @@ import styles from './life.style';
 class LifeInsurance extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     refBusModal: false,
     access_token: '',
     modal: '',
@@ -73,6 +73,7 @@ class LifeInsurance extends Component {
     state: '',
     zip: '',
     country: '',
+    countriesList:'',
     beneficiaries1: '',
     beneficiaries2: '',
     beneficiaries3: '',
@@ -99,11 +100,12 @@ class LifeInsurance extends Component {
       // if (this.props.userData && this.props.userData.userData)
         this.setState(
           {
-            access_token: this.userInfo.access_token,
+            access_token: this.userInfo?.access_token,
           },
           () => this.viewRecord(),
           this.getBusinessEntity(),
-          this.getUserInfo()
+          this.getUserInfo(),
+          this.loadCountries()
         );
     });
   }
@@ -123,6 +125,17 @@ class LifeInsurance extends Component {
       console.log('Error fetching user info:', error);
     }
   };
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
   viewRecord = async () => {
     const information = await AsyncStorage.getItem('user_info');
     if (information) {
@@ -136,7 +149,7 @@ class LifeInsurance extends Component {
     await viewRecords(
       'LifeInsurance',
       recid,
-      this.userInfo.access_token
+      this.userInfo?.access_token
       // this.props.userData.userData.access_token,
     )
       .then((response) => {
@@ -217,7 +230,7 @@ class LifeInsurance extends Component {
     }
     // const {userData} = this.props;
     // if (userData !== null) {
-      await lookupType(this.userInfo.access_token, 'RefBusinessEntity')
+      await lookupType(this.userInfo?.access_token, 'RefBusinessEntity')
         .then((response) => {
           response.pop();
           this.setState({refArray: response});
@@ -303,10 +316,11 @@ class LifeInsurance extends Component {
       Note: notes,
     });
 
-    await createOrUpdateRecord('LifeInsurance', recid, data, this.userInfo.access_token)
+    await createOrUpdateRecord('LifeInsurance', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -326,9 +340,9 @@ class LifeInsurance extends Component {
       'LifeInsurance',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token
+      this.userInfo?.access_token
     )
-      .then((response) => navigation.goBack())
+      .then((response) => this.props.navigation.navigate('Insurance'))
       .catch((error) => console.log('Error in delete', error));
   };
 
@@ -349,13 +363,14 @@ class LifeInsurance extends Component {
       'LifeInsurance',
       recid,
       // this.props.userData.userData.access_token,
-      this.userInfo.access_token,
+      this.userInfo?.access_token,
       data,
     )
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('Insurance');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -418,7 +433,7 @@ class LifeInsurance extends Component {
           keyboardType="default"
           value={this.state.issuer}
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           array={this.state.refArray}
           onPress={(issuer) => this.showAutoComplete(issuer)}
           clicked={this.state.issuerClicked}
@@ -569,7 +584,7 @@ class LifeInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.installment}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={[styles.inputContainer]}>
@@ -590,7 +605,7 @@ class LifeInsurance extends Component {
             )
           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Due"
         />
       </View>
@@ -629,7 +644,7 @@ class LifeInsurance extends Component {
           }
           color={Color.veryLightPink}
           value={this.state.total}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
     </View>
@@ -697,21 +712,19 @@ class LifeInsurance extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.country.length === 0 ? 'Country' : this.state.country
-          }
-          onPress={() =>
-            this.setState(
-              {
-                modal: true,
-                array: this.props.country.country,
-                key: 'country',
-              },
-              () => this.changesMade(),
-            )
-          }
+           label={this.state.country || 'Country'}
+           onPress={() =>
+             this.setState(
+               {
+                 modal: true,
+                 array: this.state.countriesList,
+                 key: 'country',
+               },
+               () => this.changesMade(),
+             )
+           }
           color={Color.veryLightBlue}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           name="Country"
         />
       </View>
@@ -730,7 +743,7 @@ class LifeInsurance extends Component {
           keyboardType="default"
           color={Color.veryLightPink}
           value={this.state.beneficiaries1}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -743,7 +756,7 @@ class LifeInsurance extends Component {
           keyboardType="default"
           color={Color.veryLightPink}
           value={this.state.beneficiaries2}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -756,7 +769,7 @@ class LifeInsurance extends Component {
           keyboardType="default"
           color={Color.veryLightPink}
           value={this.state.beneficiaries3}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -769,7 +782,7 @@ class LifeInsurance extends Component {
           keyboardType="default"
           color={Color.veryLightPink}
           value={this.state.beneficiaries4}
-          editable={this.state.editable}
+          editable={!this.state.editable}
         />
       </View>
     </View>
@@ -778,7 +791,7 @@ class LifeInsurance extends Component {
   notes = () => (
     <View>
       <View style={styles.inputContainer}>
-        {!this.state.editable ? (
+        {this.state.editable ? (
           <MultilineInput
             placeholder="Note"
             onChangeText={(notes) =>
@@ -864,7 +877,7 @@ class LifeInsurance extends Component {
       <RefBusinessModal
         isModalVisible={this.state.refBusModal}
         changeModalVisibility={this.changeRefBusinessmModal}
-        access_token={this.userInfo.access_token}
+        access_token={this.userInfo?.access_token}
         refreshingList={this.refreshingList}
       />
     </View>
@@ -872,10 +885,11 @@ class LifeInsurance extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -908,13 +922,14 @@ class LifeInsurance extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>     this.props.navigation.navigate('Insurance'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('Insurance');
     }
     return true;
   };

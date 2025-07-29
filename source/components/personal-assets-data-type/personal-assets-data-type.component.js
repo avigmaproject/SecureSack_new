@@ -58,6 +58,12 @@ class PersonalAssetsData extends Component {
   getData = async (type) => {
     const {userData, archive, navigation} = this.props;
     // if (userData !== null) {
+      const information = await AsyncStorage.getItem('user_info');
+      if (information) {
+        const parsedInfo = JSON.parse(information);
+        this.userInfo = parsedInfo; // 👈 stored in class variable
+        console.log('User Info stored in variable:', this.userInfo);
+      }
     if(this.userInfo!==null){
       let config = {
         method: 'GET',
@@ -112,9 +118,9 @@ class PersonalAssetsData extends Component {
           </TouchableOpacity>
         </View>
         <FlatList
-          data={category === undefined ? category : category.slice(0, show ? category.length : 3)}
+          data={category === undefined ? category : category.slice(0, show ? category.length : 2)}
           renderItem={({item}) => this.renderTitleSubtitle(item, type, title)}
-          maxToRenderPerBatch={show ? category.length : 3}
+          maxToRenderPerBatch={show ? category.length : 2}
         />
         {this.viewAll(category, show, index)}
       </View>
@@ -124,7 +130,7 @@ class PersonalAssetsData extends Component {
     viewAll = (category, show, index) => {
     const {isExpanded} = this.state;
     if (category !== undefined) {
-      if (category.length > 3) return this.viewAllComponent(show, index);
+      if (category.length > 2) return this.viewAllComponent(show, index);
     }
   };
 

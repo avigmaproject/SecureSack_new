@@ -37,10 +37,11 @@ import styles from './driving-license.style';
 class DriverLicense extends Component {
   initialState = {
     isLoader: false,
-    editable: true,
+    editable: false,
     access_token: '',
     name: '',
     countryOfIssue: '',
+    countriesList:'',
     stateOfIssue: '',
     license: '',
     dateOfIssue: '',
@@ -63,25 +64,52 @@ class DriverLicense extends Component {
   }
   userInfo = null;
   componentDidMount() {
-    const {navigation, route} = this.props;
-    BackHandler.addEventListener('hardwareBackPress', () => this.onBack());
-    navigation.addListener('focus', () => {
-      this.setState(this.initialState);
-      // if (this.props.userData && this.props.userData.userData)
-        this.setState(
-          {
-            // access_token: this.props.userData.userData.access_token,
-            access_token:this.userInfo?.access_token,
-          },
-          () => this.viewRecord(),
-          this.getUserInfo()
-        );
+    const {navigation} = this.props;
+  
+    // Handle Android back press
+    this.backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        this.props.navigation.navigate('GovernmentRecords');
+        return true;
+      }
+    );
+  
+    // Animate when screen is focused
+    this.focusListener = navigation.addListener('focus', () => {
+      // Reset animation start value
+
+  
+     
+  
+      // Load data
+      this.setState(
+        {
+          access_token: this.userInfo?.access_token,
+        },
+        () => {
+          this.viewRecord();
+          this.getUserInfo();
+          this.loadCountries();
+        }
+      );
     });
   }
 
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', handler);
+    if (this.backHandler) this.backHandler.remove();
   }
+  loadCountries = async () => {
+    try {
+      const saved = await AsyncStorage.getItem('countries');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        this.setState({ countriesList: parsed });
+      }
+    } catch (err) {
+      console.error('Error loading countries:', err);
+    }
+  };
   getUserInfo = async () => {
     try {
       const information = await AsyncStorage.getItem('user_info');
@@ -103,6 +131,7 @@ class DriverLicense extends Component {
     }
     const {navigation, route} = this.props;
     const {recid, mode} = route.params;
+ 
     this.setState({isLoader: true});
     await viewRecords(
       'DriverLicense',
@@ -189,7 +218,8 @@ class DriverLicense extends Component {
     await createOrUpdateRecord('DriverLicense', recid, data, this.userInfo?.access_token)
       .then((response) => {
         this.setState({isLoader: false});
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('GovernmentRecords');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -215,7 +245,7 @@ class DriverLicense extends Component {
       this.userInfo?.access_token
       // this.props.userData.userData.access_token,
     )
-      .then((response) => navigation.goBack())
+      .then((response) =>   this.props.navigation.navigate('GovernmentRecords'))
       .catch((error) => {
         console.log('Error in delete', error);
         // navigation.reset({
@@ -248,7 +278,8 @@ class DriverLicense extends Component {
       .then((response) => {
         this.setState({isLoader: false});
         console.log('Response', response);
-        navigation.goBack();
+        // navigation.goBack();
+        this.props.navigation.navigate('GovernmentRecords');
       })
       .catch((error) => {
         this.setState({isLoader: false});
@@ -317,23 +348,20 @@ class DriverLicense extends Component {
       </View>
       <View style={styles.inputContainer}>
         <ModalPicker
-          label={
-            this.state.countryOfIssue.length === 0
-              ? 'Country of Issue'
-              : this.state.countryOfIssue
-          }
-          onPress={() =>
-            this.setState(
-              {
-                modal: true,
-                array: this.props.country.country,
-                key: 'countryOfIssue',
-              },
-              () => this.changesMade(),
-            )
-          }
+         label={this.state.countryOfIssue || 'Country of Issue'}
+         onPress={() =>
+           this.setState(
+             {
+               modal: true,
+               array: this.state.countriesList,
+               key: 'countryOfIssue',
+             },
+             () => this.changesMade(),
+           )
+         }
+        
           color={Color.veryLightPink}
-          editable={this.state.editable}
+          editable={!this.state.editable}
           // editable={false}
           name="Country of Issue"
         />
@@ -466,10 +494,11 @@ class DriverLicense extends Component {
 
   onSave = () => {
     this.submit();
+    this.setState({editable: false})
   };
 
   onEdit = () => {
-    this.setState({editable: false}, () => console.log(this.state.editable));
+    this.setState({editable: true}, () => console.log(this.state.editable));
   };
 
   onDelete = () => {
@@ -502,13 +531,14 @@ class DriverLicense extends Component {
         'Do you want to save changes ?',
         [
           {text: 'Save', onPress: () => this.submit()},
-          {text: 'Cancel', onPress: () => navigation.goBack(), style: 'cancel'},
+          {text: 'Cancel', onPress: () =>    this.props.navigation.navigate('GovernmentRecords'), style: 'cancel'},
         ],
         {cancelable: false},
         //clicking out side of alert will not cancel
       );
     } else {
-      navigation.goBack();
+      // navigation.goBack();
+      this.props.navigation.navigate('GovernmentRecords');
     }
     return true;
   };
@@ -520,6 +550,7 @@ class DriverLicense extends Component {
     const {isLoader, modal, array, key, editable, shareKeyId} = this.state;
     const {route, navigation} = this.props;
     const {title, type, mode, recid} = route.params;
+    
     return (
       <NativeBaseProvider>
         <SafeAreaView style={styles.outerView}>
